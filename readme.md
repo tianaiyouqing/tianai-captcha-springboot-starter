@@ -38,7 +38,7 @@ public class Test {
 ![](image/1.png)
 ![](image/2.png)
 
-- 该自动装配器可以自动旋转redis做缓存还是缓存到本地，自动进行识别装配
+- 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存使用了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) 做过期处理, 有兴趣可以看一下
 
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
