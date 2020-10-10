@@ -135,7 +135,6 @@ public class ClearExpireEntityListener implements ApplicationListener<TimeMapEve
     private void processExpireKeys() {
         List<Object> readExpireKeys = getRandomExpireKeys(maxReadExpireKeys);
         log.debug("剩余过期key总数[{}] 监听过期key --> {} ", expireKeys.size(), readExpireKeys);
-        System.out.println("剩余过期key总数["+ expireKeys.size()+"] 监听过期key --> "  + readExpireKeys);
         for (Object expireKey : readExpireKeys) {
             Object val = expiringMap.get(expireKey);
             if (Objects.isNull(val)) {
