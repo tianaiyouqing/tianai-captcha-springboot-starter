@@ -24,21 +24,21 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 @Order
 @Configuration
-@EnableConfigurationProperties(SliderCaptchaAutoConfiguration.RedisSliderCaptchaProperties.class)
+@EnableConfigurationProperties(SliderCaptchaAutoConfiguration.SliderCaptchaProperties.class)
 public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnClass(StringRedisTemplate.class)
     @ConditionalOnMissingBean
-    public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate, RedisSliderCaptchaProperties properties) {
+    public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate, SliderCaptchaProperties properties) {
         return new RedisCacheSliderCaptchaApplication(redisTemplate, properties.getPrefix(), properties.getExpire());
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnMissingClass("org.springframework.data.redis.core.StringRedisTemplate")
-    public SliderCaptchaApplication local() {
-        return new LocalCacheSliderCaptchaApplication();
+    public SliderCaptchaApplication local(SliderCaptchaProperties properties) {
+        return new LocalCacheSliderCaptchaApplication(properties.getExpire());
     }
 
 
@@ -56,7 +56,7 @@ public class SliderCaptchaAutoConfiguration {
 
     @Data
     @ConfigurationProperties(prefix = "captcha.slider")
-    public class RedisSliderCaptchaProperties {
+    public static class SliderCaptchaProperties {
         private String prefix = "captcha:slider";
         private long expire = 60000;
     }

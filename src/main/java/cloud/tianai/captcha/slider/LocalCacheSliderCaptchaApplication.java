@@ -1,7 +1,8 @@
 package cloud.tianai.captcha.slider;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import vip.tianai.ExpiringMap;
+import vip.tianai.listener.ClearExpireEntityListener;
+import vip.tianai.util.ExpiringMapUtils;
 
 /**
  * @Author: 天爱有情
@@ -10,7 +11,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApplication {
 
-    private Map<String, Float> cache = new ConcurrentHashMap<>(255);
+    private ExpiringMap<String, Float> cache;
+
+
+    private long expire;
+
+    public LocalCacheSliderCaptchaApplication(long expire) {
+        this.expire = expire;
+        ClearExpireEntityListener listener = ExpiringMapUtils.createClearExpireEntityListener(200, 1000L);
+        // 构建一个带有过期key的本地缓存
+        cache = ExpiringMapUtils.<String, Float>builder()
+                .addListener(listener)
+                .build();
+        cache.init();
+    }
 
     @Override
     protected Float getPercentForCache(String id) {
@@ -21,6 +35,6 @@ public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
     @Override
     protected void cacheVerification(String id, Float xPercent) {
         cache.remove(id);
-        cache.put(id, xPercent);
+        cache.put(id, xPercent, expire);
     }
 }
