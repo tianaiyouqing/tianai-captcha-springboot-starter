@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 public class CaptchaTest {
 
     public static void main(String[] args) throws InterruptedException {
-        LocalCacheSliderCaptchaApplication captchaApplication = new LocalCacheSliderCaptchaApplication(TimeUnit.SECONDS.toMillis(2));
+        LocalCacheSliderCaptchaApplication captchaApplication = new LocalCacheSliderCaptchaApplication(TimeUnit.MINUTES.toMillis(1));
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             new Thread(() -> {
                 for (int a = 0; a < 100; a++) {
                     StopWatch stopWatch = new StopWatch();

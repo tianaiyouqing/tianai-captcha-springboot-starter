@@ -5,10 +5,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
 public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
 
     private ConcurrentHashMap<K, TimeMapEntity<K, V>> storage;
-    private SortedMap<Long, LinkedList<K>> sortedMap = new TreeMap<>();
+    private SortedMap<Long, LinkedList<K>> sortedMap = new ConcurrentSkipListMap<>();
     private final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("expiring-map-expire"));
     public static final int LIMIT = 500;
 
@@ -216,6 +213,9 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
             }
             log.debug("storage-size: {}", ConCurrentExpiringMap.this.storage.size());
             log.debug("expire-size: {}", expireMap.size());
+
+            System.out.println("storage-size: "+ ConCurrentExpiringMap.this.storage.size());
+            System.out.println("expire-size: "+ expireMap.size());
             //2. 获取 key 进行处理
             int count = 0;
             LinkedList<Long> removeKeys = null;
@@ -239,6 +239,7 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
                     continue;
                 }
                 if (count >= limit) {
+                    // 检索数量达到z最大值，直接跳出
                     break;
                 }
 
@@ -250,15 +251,12 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
                         iterator.remove();
                         // 再移除缓存，后续可以通过惰性删除做补偿
                         ConCurrentExpiringMap.this.get(key);
+                        if (removeKeys == null) {
+                            removeKeys = new LinkedList<>();
+                        }
+                        removeKeys.add(expireAt);
                         count++;
                     }
-                    if (removeKeys == null) {
-                        removeKeys = new LinkedList<>();
-                    }
-                    removeKeys.add(expireAt);
-                } else {
-                    // 直接跳过，没有过期的信息
-                    return;
                 }
             }
             if (removeKeys != null && removeKeys.size() > 0) {
