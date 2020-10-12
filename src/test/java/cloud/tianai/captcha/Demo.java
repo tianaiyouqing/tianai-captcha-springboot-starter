@@ -1,35 +1,35 @@
 package cloud.tianai.captcha;
 
-import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
-import cloud.tianai.captcha.vo.CaptchaResponse;
-import cloud.tianai.captcha.vo.SliderCaptchaVO;
-import vip.tianai.ExpiringMap;
-import vip.tianai.listener.ClearExpireEntityListener;
-import vip.tianai.util.ExpiringMapUtils;
+import cloud.tianai.captcha.cache.ConCurrentExpiringMap;
+import org.springframework.util.StopWatch;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Demo {
 
 
     public static void main(String[] args) throws InterruptedException {
-        LocalCacheSliderCaptchaApplication application = new LocalCacheSliderCaptchaApplication(6000);
-        CaptchaResponse<SliderCaptchaVO> response = application.generateSliderCaptchaForWebp();
-        System.out.println(response);
-
-        ClearExpireEntityListener listener = ExpiringMapUtils.createClearExpireEntityListener(200, 1000L);
-        // 构建一个带有过期key的本地缓存
-        ExpiringMap<String, Float> expiringMap = ExpiringMapUtils.<String, Float>builder()
-                .addListener(listener)
-                .build();
+        ConCurrentExpiringMap<Object, Object> expiringMap = new ConCurrentExpiringMap<>();
         expiringMap.init();
-        for (int i = 0; i < 10000; i++) {
-            expiringMap.put("aa" + i, 123f, ThreadLocalRandom.current().nextLong(100, 6000));
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        for (int i = 0; i < 1000000; i++) {
+            expiringMap.put(i + "", 1212, 6000L, TimeUnit.MILLISECONDS);
         }
+        stopWatch.stop();
 
-        TimeUnit.SECONDS.sleep(100);
+        System.out.println("耗时:" + stopWatch.getTotalTimeMillis());
 
 
+        TimeUnit.HOURS.sleep(1);
+
+//        StopWatch stopWatch = new StopWatch();
+//        stopWatch.start();
+//        for (int i = 0; i < 1000000; i++) {
+//            long l = System.nanoTime();
+//        }
+//        stopWatch.stop();
+//
+//        System.out.println("耗时:" + stopWatch.getTotalTimeMillis());
     }
 }
