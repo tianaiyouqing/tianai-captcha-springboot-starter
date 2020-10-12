@@ -208,14 +208,11 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
             SortedMap<Long, LinkedList<K>> expireMap = ConCurrentExpiringMap.this.sortedMap;
             int limit = ConCurrentExpiringMap.LIMIT;
             //1.判断是否为空
-            if (expireMap == null) {
+            if (expireMap == null || expireMap.size() < 1) {
                 return;
             }
             log.debug("storage-size: {}", ConCurrentExpiringMap.this.storage.size());
             log.debug("expire-size: {}", expireMap.size());
-
-            System.out.println("storage-size: "+ ConCurrentExpiringMap.this.storage.size());
-            System.out.println("expire-size: "+ expireMap.size());
             //2. 获取 key 进行处理
             int count = 0;
             LinkedList<Long> removeKeys = null;
@@ -227,9 +224,6 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
             for (Entry<Long, LinkedList<K>> entry : expireMap.entrySet()) {
                 final Long expireAt = entry.getKey();
                 LinkedList<K> expireKeys = entry.getValue();
-                if (expireKeys.size() > 1) {
-                    System.out.println("列表大于1 size: [" + expireKeys.size() + "]data：" + expireKeys);
-                }
                 // 判断队列是否为空
                 if (expireKeys == null || expireKeys.size() < 1) {
                     if (removeKeys == null) {
