@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.slider;
 
-import cloud.tianai.captcha.tianaicaptcha.template.slider.SliderCaptchaInfo;
-import cloud.tianai.captcha.tianaicaptcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.util.Sequence;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;

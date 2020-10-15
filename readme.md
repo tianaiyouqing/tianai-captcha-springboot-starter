@@ -1,5 +1,15 @@
 # 这是 滑块验证码(tianai-captcha)的springboot启动类
 ## 不说废话，直接上代码
+
+```xml
+<!-- maven导入 -->
+<dependency>
+    <groupId>cloud.tianai.captcha</groupId>
+    <artifactId>tianai-captcha-springboot-starter</artifactId>
+    <version>1.0-alpha</version>
+</dependency>
+```
+
 - 注解版风格
 ```java
 // 只需要在需要验证的controller层加入 @Captcha 注解，
