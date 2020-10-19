@@ -6,11 +6,12 @@ import cloud.tianai.captcha.aop.CaptchaInterceptor;
 import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.RedisCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
-import lombok.Data;
+import cloud.tianai.captcha.template.slider.CacheSliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.DefaultSliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,21 +25,29 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 @Order
 @Configuration
-@EnableConfigurationProperties(SliderCaptchaAutoConfiguration.SliderCaptchaProperties.class)
+@EnableConfigurationProperties(SliderCaptchaProperties.class)
 public class SliderCaptchaAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop) {
+        SliderCaptchaTemplate template = new DefaultSliderCaptchaTemplate(prop.getTargetFormatName(), prop.getMatrixFormatName(), prop.getInitDefaultResource());
+        // 增加缓存处理
+        return new CacheSliderCaptchaTemplate(template, prop.getCacheSize());
+    }
 
     @Bean
     @ConditionalOnClass(StringRedisTemplate.class)
     @ConditionalOnMissingBean
-    public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate, SliderCaptchaProperties properties) {
-        return new RedisCacheSliderCaptchaApplication(redisTemplate, properties.getPrefix(), properties.getExpire());
+    public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate, SliderCaptchaTemplate template, SliderCaptchaProperties properties) {
+        return new RedisCacheSliderCaptchaApplication(redisTemplate, template, properties);
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnMissingClass("org.springframework.data.redis.core.StringRedisTemplate")
-    public SliderCaptchaApplication local(SliderCaptchaProperties properties) {
-        return new LocalCacheSliderCaptchaApplication(properties.getExpire());
+    public SliderCaptchaApplication local(SliderCaptchaTemplate template, SliderCaptchaProperties properties) {
+        return new LocalCacheSliderCaptchaApplication(template, properties);
     }
 
 
@@ -54,10 +63,5 @@ public class SliderCaptchaAutoConfiguration {
         return new CaptchaAdvisor(interceptor);
     }
 
-    @Data
-    @ConfigurationProperties(prefix = "captcha.slider")
-    public static class SliderCaptchaProperties {
-        private String prefix = "captcha:slider";
-        private long expire = 60000;
-    }
+
 }

@@ -1,8 +1,10 @@
 package cloud.tianai.captcha.slider;
 
 
+import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.cache.ConCurrentExpiringMap;
 import cloud.tianai.captcha.cache.ExpiringMap;
+import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,11 +20,13 @@ public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
 
     private long expire;
 
-    public LocalCacheSliderCaptchaApplication(long expire) {
-        this.expire = expire;
+    public LocalCacheSliderCaptchaApplication(SliderCaptchaTemplate template, SliderCaptchaProperties prop) {
+        super(template, prop);
+        this.expire = prop.getExpire();
         cache = new ConCurrentExpiringMap<>();
         cache.init();
     }
+
 
     @Override
     protected Float getPercentForCache(String id) {
