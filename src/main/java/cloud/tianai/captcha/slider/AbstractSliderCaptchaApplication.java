@@ -3,6 +3,7 @@ package cloud.tianai.captcha.slider;
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
 import cloud.tianai.captcha.util.Sequence;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
@@ -33,6 +34,10 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
         SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo();
+        if (slideImageInfo == null) {
+            // 要是生成失败
+            throw new SliderCaptchaException("生成滑块验证码失败，验证码生成为空");
+        }
         // 生成ID
         String id = generatorId();
 

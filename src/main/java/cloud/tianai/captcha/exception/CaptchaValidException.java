@@ -1,11 +1,13 @@
 package cloud.tianai.captcha.exception;
 
+import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
+
 /**
  * @Author: 天爱有情
  * @Date 2020/6/19 16:36
  * @Description 验证码验证失败异常
  */
-public class CaptchaValidException extends RuntimeException{
+public class CaptchaValidException extends SliderCaptchaException {
 
     public CaptchaValidException() {
     }
