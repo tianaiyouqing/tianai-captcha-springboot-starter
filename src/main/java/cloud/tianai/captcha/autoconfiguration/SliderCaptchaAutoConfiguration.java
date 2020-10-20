@@ -9,6 +9,7 @@ import cloud.tianai.captcha.slider.SliderCaptchaApplication;
 import cloud.tianai.captcha.template.slider.CacheSliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.DefaultSliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
