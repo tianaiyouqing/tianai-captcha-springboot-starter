@@ -4,7 +4,7 @@ import cloud.tianai.captcha.template.slider.CacheSliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
@@ -17,10 +17,9 @@ import org.springframework.core.annotation.Order;
  */
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE - 10)
-public class CacheCaptchaTemplateListener implements ApplicationListener<ApplicationStartedEvent> {
-
+public class CacheCaptchaTemplateListener implements ApplicationListener<ApplicationReadyEvent> {
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
+    public void onApplicationEvent(ApplicationReadyEvent event) {
         ConfigurableApplicationContext applicationContext = event.getApplicationContext();
         try {
             SliderCaptchaTemplate bean = applicationContext.getBean(SliderCaptchaTemplate.class);
@@ -32,6 +31,5 @@ public class CacheCaptchaTemplateListener implements ApplicationListener<Applica
         } catch (BeansException e) {
             log.debug("CaptchaTemplateListener 获取 SliderCaptchaTemplate 失败");
         }
-
     }
 }
