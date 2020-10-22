@@ -88,6 +88,26 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
         template.deleteTemplate(t);
     }
 
+    @Override
+    public List<URL> listResources() {
+        return template.listResources();
+    }
+
+    @Override
+    public void clearResources() {
+        template.clearResources();
+    }
+
+    @Override
+    public List<Map<String, URL>> listTemplates() {
+        return template.listTemplates();
+    }
+
+    @Override
+    public void clearTemplates() {
+        template.clearTemplates();
+    }
+
     private String generatorId() {
         return String.valueOf(sequence.nextId());
     }
