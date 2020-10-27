@@ -52,4 +52,5 @@ public class Test {
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
 
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
+- qq群: 1021884609
  
