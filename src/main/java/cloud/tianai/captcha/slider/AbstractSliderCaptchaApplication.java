@@ -2,15 +2,12 @@ package cloud.tianai.captcha.slider;
 
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
 import cloud.tianai.captcha.util.Sequence;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
-
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -58,56 +55,6 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     }
 
 
-    @Override
-    public void addResource(URL url) {
-        template.addResource(url);
-    }
-
-    @Override
-    public void addTemplate(Map<String, URL> t) {
-        template.addTemplate(t);
-    }
-
-    @Override
-    public void setResource(List<URL> resources) {
-        template.setResource(resources);
-    }
-
-    @Override
-    public void setTemplates(List<Map<String, URL>> imageTemplates) {
-        template.setTemplates(imageTemplates);
-    }
-
-    @Override
-    public void deleteResource(URL resource) {
-        template.deleteResource(resource);
-    }
-
-    @Override
-    public void deleteTemplate(Map<String, URL> t) {
-        template.deleteTemplate(t);
-    }
-
-    @Override
-    public List<URL> listResources() {
-        return template.listResources();
-    }
-
-    @Override
-    public void clearResources() {
-        template.clearResources();
-    }
-
-    @Override
-    public List<Map<String, URL>> listTemplates() {
-        return template.listTemplates();
-    }
-
-    @Override
-    public void clearTemplates() {
-        template.clearTemplates();
-    }
-
     private String generatorId() {
         return String.valueOf(sequence.nextId());
     }
@@ -127,4 +74,9 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
      * @param xPercent ID对应的百分比
      */
     protected abstract void cacheVerification(String id, Float xPercent);
+
+    @Override
+    public SliderCaptchaResourceManager getSliderCaptchaResourceManager() {
+        return template.getSlideImageResourceManager();
+    }
 }

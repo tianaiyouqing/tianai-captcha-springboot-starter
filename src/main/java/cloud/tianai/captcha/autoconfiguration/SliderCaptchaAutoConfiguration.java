@@ -6,9 +6,7 @@ import cloud.tianai.captcha.aop.CaptchaInterceptor;
 import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.RedisCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
-import cloud.tianai.captcha.template.slider.CacheSliderCaptchaTemplate;
-import cloud.tianai.captcha.template.slider.DefaultSliderCaptchaTemplate;
-import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.*;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,10 +31,16 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop) {
-        SliderCaptchaTemplate template = new DefaultSliderCaptchaTemplate(prop.getTargetFormatName(), prop.getMatrixFormatName(), prop.getInitDefaultResource());
+    public SliderCaptchaResourceManager sliderCaptchaResourceManager() {
+        return new DefaultSliderCaptchaResourceManager(new DefaultResourceStore());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop, SliderCaptchaResourceManager captchaResourceManager) {
+        SliderCaptchaTemplate template = new DefaultSliderCaptchaTemplate(captchaResourceManager, prop.getInitDefaultResource());
         // 增加缓存处理
-        return new CacheSliderCaptchaTemplate(template, prop.getCacheSize());
+        return new CacheSliderCaptchaTemplate(template, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
     }
 
     @Bean

@@ -11,16 +11,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "captcha.slider")
 public class SliderCaptchaProperties {
-    /** 过期key prefix.*/
+    /** 过期key prefix. */
     private String prefix = "captcha:slider";
-    /** 过期时间.*/
+    /** 过期时间. */
     private long expire = 60000;
-    /** 缓存大小.*/
+    /** 缓存大小. */
     private Integer cacheSize = 20;
-    /** 背景图片格式化名称.*/
-    private String targetFormatName = "jpeg";
-    /** 滑块图片格式化名称.*/
-    private String matrixFormatName = "png";
-    /** 是否初始化默认资源.*/
+    /** 缓存拉取失败后等待时间. */
+    private Integer waitTime = 1000;
+    /** 缓存检查间隔. */
+    private Integer period = 100;
+    /** 是否初始化默认资源. */
     private Boolean initDefaultResource = true;
 }

@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.slider;
 
 
-import cloud.tianai.captcha.template.slider.SliderCaptchaResource;
+import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 
@@ -10,7 +10,7 @@ import cloud.tianai.captcha.vo.SliderCaptchaVO;
  * @Date 2020/5/29 8:33
  * @Description 滑块验证码应用程序
  */
-public interface SliderCaptchaApplication extends SliderCaptchaResource {
+public interface SliderCaptchaApplication {
 
     /**
      * 生成滑块验证码
@@ -27,4 +27,11 @@ public interface SliderCaptchaApplication extends SliderCaptchaResource {
      * @return 匹配成功返回true， 否则返回false
      */
     boolean matching(String id, Float percentage);
+
+    /**
+     * 获取验证码资源管理器
+     *
+     * @return SliderCaptchaResourceManager
+     */
+    SliderCaptchaResourceManager getSliderCaptchaResourceManager();
 }

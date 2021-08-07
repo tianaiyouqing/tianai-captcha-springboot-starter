@@ -40,7 +40,6 @@ public class CaptchaInterceptor implements MethodInterceptor {
         String id = captchaRequest.getId();
         Float percentage = captchaRequest.getPercentage();
         if (StringUtils.isBlank(id) || percentage == null) {
-            log.error("验证码验证 方法名称:{} id 或者 percentage 不能为空", invocation.getMethod().getName());
             throw new CaptchaValidException("id 或者 percentage 不能为空");
         }
 
