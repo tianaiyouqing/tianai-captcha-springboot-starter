@@ -6,7 +6,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 ```
 
