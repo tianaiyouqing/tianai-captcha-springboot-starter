@@ -80,7 +80,7 @@ public class SliderCaptchaAutoConfiguration {
     public static class RedisSliderCaptchaApplication {
 
         @Bean
-        @ConditionalOnBean({StringRedisTemplate.class, SliderCaptchaTemplate.class})
+        @ConditionalOnBean(StringRedisTemplate.class)
         @ConditionalOnMissingBean(SliderCaptchaApplication.class)
         public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate,
                                               SliderCaptchaTemplate template,
@@ -101,7 +101,6 @@ public class SliderCaptchaAutoConfiguration {
     public static class LocalSliderCaptchaApplication {
 
         @Bean
-        @ConditionalOnBean(SliderCaptchaTemplate.class)
         @ConditionalOnMissingBean(SliderCaptchaApplication.class)
         public SliderCaptchaApplication local(SliderCaptchaTemplate template, SliderCaptchaProperties properties) {
             return new LocalCacheSliderCaptchaApplication(template, properties);
