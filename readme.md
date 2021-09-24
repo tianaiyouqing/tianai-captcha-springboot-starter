@@ -33,8 +33,6 @@ public class Test {
     public void test() {
         // 生成滑块验证码
         CaptchaResponse<SliderCaptchaVO> res1 = application.generateSliderCaptcha();
-        // 生成 webp格式的滑块验证码 
-        CaptchaResponse<SliderCaptchaVO> res2 = application.generateSliderCaptchaForWebp();
         // 匹配验证码是否正确
         boolean match =  application.matching(res1.getId(), 0.35665);        
     }
