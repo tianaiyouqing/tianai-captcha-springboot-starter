@@ -7,6 +7,7 @@ import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.RedisCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
 import cloud.tianai.captcha.template.slider.*;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -16,6 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -44,12 +46,14 @@ public class SliderCaptchaAutoConfiguration {
     }
 
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @ConditionalOnMissingBean
-    public CaptchaInterceptor captchaInterceptor(SliderCaptchaApplication application) {
-        return new CaptchaInterceptor(application);
+    public CaptchaInterceptor captchaInterceptor() {
+        return new CaptchaInterceptor();
     }
 
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @ConditionalOnMissingBean
     public CaptchaAdvisor captchaAdvisor(CaptchaInterceptor interceptor) {
         return new CaptchaAdvisor(interceptor);
@@ -57,6 +61,7 @@ public class SliderCaptchaAutoConfiguration {
 
 
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @ConditionalOnMissingBean
     public CacheCaptchaTemplateListener captchaTemplateListener() {
         return new CacheCaptchaTemplateListener();

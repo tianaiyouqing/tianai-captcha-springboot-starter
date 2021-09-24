@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
  * @Author: 天爱有情
@@ -15,19 +18,16 @@ import org.apache.commons.lang3.StringUtils;
  * @Description 验证码拦截器
  */
 @Slf4j
-public class CaptchaInterceptor implements MethodInterceptor {
+public class CaptchaInterceptor implements MethodInterceptor, BeanFactoryAware {
     private SliderCaptchaApplication captchaApplication;
-
-    public CaptchaInterceptor(SliderCaptchaApplication captchaApplication) {
-        this.captchaApplication = captchaApplication;
-    }
+    private BeanFactory beanFactory;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Object[] arguments = invocation.getArguments();
         CaptchaRequest captchaRequest = null;
         for (Object arg : arguments) {
-            if (arg instanceof  CaptchaRequest) {
+            if (arg instanceof CaptchaRequest) {
                 captchaRequest = (CaptchaRequest) arg;
                 break;
             }
@@ -51,5 +51,15 @@ public class CaptchaInterceptor implements MethodInterceptor {
         throw new CaptchaValidException("验证失败");
     }
 
+    public SliderCaptchaApplication getSliderCaptchaApplication() {
+        if (captchaApplication == null) {
+            this.captchaApplication = beanFactory.getBean(SliderCaptchaApplication.class);
+        }
+        return captchaApplication;
+    }
 
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }
