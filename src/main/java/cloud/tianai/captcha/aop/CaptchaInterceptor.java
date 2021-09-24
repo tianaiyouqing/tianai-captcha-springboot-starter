@@ -43,7 +43,7 @@ public class CaptchaInterceptor implements MethodInterceptor, BeanFactoryAware {
             throw new CaptchaValidException("id 或者 percentage 不能为空");
         }
 
-        boolean matching = captchaApplication.matching(id, percentage);
+        boolean matching = getSliderCaptchaApplication().matching(id, percentage);
         if (matching) {
             return invocation.proceed();
         }
