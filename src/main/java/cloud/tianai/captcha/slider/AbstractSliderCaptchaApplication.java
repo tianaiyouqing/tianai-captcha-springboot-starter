@@ -5,9 +5,10 @@ import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
-import cloud.tianai.captcha.util.Sequence;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
+
+import java.util.UUID;
 
 
 /**
@@ -18,7 +19,6 @@ import cloud.tianai.captcha.vo.SliderCaptchaVO;
 public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaApplication {
 
     private SliderCaptchaTemplate template;
-    private Sequence sequence = new Sequence();
 
     protected SliderCaptchaProperties prop;
 
@@ -55,8 +55,8 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     }
 
 
-    private String generatorId() {
-        return String.valueOf(sequence.nextId());
+    protected String generatorId() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
