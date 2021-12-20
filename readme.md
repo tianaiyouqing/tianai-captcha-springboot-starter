@@ -1,4 +1,5 @@
 # 这是 滑块验证码(tianai-captcha)的springboot启动类
+## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 ## 不说废话，直接上代码
 
 ```xml
