@@ -48,6 +48,25 @@ public class Test {
 ![](image/1.png)
 ![](image/2.png)
 
+- springboot配置文件说明
+```yaml
+# 滑块验证码配置， 详细请看 cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties 类
+captcha:
+  slider:
+    # 如果项目中使用到了redis，滑块验证码会自动把验证码数据存到redis中， 这里配置redis的key的前缀,默认是captcha:slider
+    prefix: |-
+      captcha:slider
+    # 验证码过期时间，默认是1分钟,单位毫秒， 可以根据自身业务进行调整
+    expire: 60000
+    # 使用加载系统自带的资源， 默认是true
+    init-default-resource: false
+    # 验证码会提前缓存一些生成好的验证数据， 默认是20
+    cacheSize: 20
+    # 缓存拉取失败后等待时间 默认是 5秒钟
+    wait-time: 5000
+    # 缓存检查间隔 默认是2秒钟
+    period: 2000
+```
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
 
