@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.slider;
 
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
+import cloud.tianai.captcha.template.slider.GenerateParam;
 import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
@@ -30,7 +31,11 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo();
+        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo(GenerateParam.builder()
+                .backgroundFormatName("jpeg")
+                .sliderFormatName("png")
+                .obfuscate(prop.getObfuscate())
+                .build());
         if (slideImageInfo == null) {
             // 要是生成失败
             throw new SliderCaptchaException("生成滑块验证码失败，验证码生成为空");

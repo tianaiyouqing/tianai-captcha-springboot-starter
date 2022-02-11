@@ -23,4 +23,6 @@ public class SliderCaptchaProperties {
     private Integer period = 100;
     /** 是否初始化默认资源. */
     private Boolean initDefaultResource = true;
+    /** 是否加入混淆滑块，默认不开启.*/
+    private Boolean obfuscate = false;
 }
