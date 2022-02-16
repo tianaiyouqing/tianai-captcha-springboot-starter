@@ -36,19 +36,11 @@ public class SliderCaptchaAutoConfiguration {
     public SliderCaptchaResourceManager sliderCaptchaResourceManager() {
         return new DefaultSliderCaptchaResourceManager(new DefaultResourceStore());
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public CaptchaImageConverter captchaImageConverter() {
-        return new DefaultCaptchaImageConverter();
-    }
-
     @Bean
     @ConditionalOnMissingBean
     public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
-                                                       SliderCaptchaResourceManager captchaResourceManager,
-                                                       CaptchaImageConverter captchaImageConverter) {
-        SliderCaptchaTemplate template = new StandardSliderCaptchaTemplate(captchaResourceManager, captchaImageConverter, prop.getInitDefaultResource());
+                                                       SliderCaptchaResourceManager captchaResourceManager) {
+        SliderCaptchaTemplate template = new StandardSliderCaptchaTemplate(captchaResourceManager, prop.getInitDefaultResource());
         // 增加缓存处理
         return new CacheSliderCaptchaTemplate(template, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
     }
