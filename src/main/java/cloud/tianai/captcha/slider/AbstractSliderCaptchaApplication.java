@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaApplication {
 
-    private SliderCaptchaTemplate template;
+    protected SliderCaptchaTemplate template;
 
     protected SliderCaptchaProperties prop;
 

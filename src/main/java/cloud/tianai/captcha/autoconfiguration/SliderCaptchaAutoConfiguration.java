@@ -39,11 +39,21 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop, SliderCaptchaResourceManager captchaResourceManager) {
-        SliderCaptchaTemplate template = new DefaultSliderCaptchaTemplate(captchaResourceManager, prop.getInitDefaultResource());
+    public CaptchaImageConverter captchaImageConverter() {
+        return new DefaultCaptchaImageConverter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
+                                                       SliderCaptchaResourceManager captchaResourceManager,
+                                                       CaptchaImageConverter captchaImageConverter) {
+        SliderCaptchaTemplate template = new StandardSliderCaptchaTemplate(captchaResourceManager, captchaImageConverter, prop.getInitDefaultResource());
         // 增加缓存处理
         return new CacheSliderCaptchaTemplate(template, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
     }
+
+
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
