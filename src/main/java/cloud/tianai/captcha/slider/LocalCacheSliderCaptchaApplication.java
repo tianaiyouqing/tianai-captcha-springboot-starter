@@ -5,6 +5,7 @@ import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.cache.ConCurrentExpiringMap;
 import cloud.tianai.captcha.cache.ExpiringMap;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +21,10 @@ public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
 
     private long expire;
 
-    public LocalCacheSliderCaptchaApplication(SliderCaptchaTemplate template, SliderCaptchaProperties prop) {
-        super(template, prop);
+    public LocalCacheSliderCaptchaApplication(SliderCaptchaTemplate template,
+                                              SliderCaptchaValidator sliderCaptchaValidator,
+                                              SliderCaptchaProperties prop) {
+        super(template, sliderCaptchaValidator,prop);
         this.expire = prop.getExpire();
         cache = new ConCurrentExpiringMap<>();
         cache.init();

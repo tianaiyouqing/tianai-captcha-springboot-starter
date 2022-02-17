@@ -7,6 +7,8 @@ import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.RedisCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
 import cloud.tianai.captcha.template.slider.*;
+import cloud.tianai.captcha.template.slider.validator.BasicCaptchaTrackValidator;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,6 +38,7 @@ public class SliderCaptchaAutoConfiguration {
     public SliderCaptchaResourceManager sliderCaptchaResourceManager() {
         return new DefaultSliderCaptchaResourceManager(new DefaultResourceStore());
     }
+
     @Bean
     @ConditionalOnMissingBean
     public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
@@ -45,7 +48,11 @@ public class SliderCaptchaAutoConfiguration {
         return new CacheSliderCaptchaTemplate(template, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
     }
 
-
+    @Bean
+    @ConditionalOnMissingBean
+    public SliderCaptchaValidator sliderCaptchaValidator() {
+        return new BasicCaptchaTrackValidator();
+    }
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -86,8 +93,9 @@ public class SliderCaptchaAutoConfiguration {
         @ConditionalOnMissingBean(SliderCaptchaApplication.class)
         public SliderCaptchaApplication redis(StringRedisTemplate redisTemplate,
                                               SliderCaptchaTemplate template,
+                                              SliderCaptchaValidator sliderCaptchaValidator,
                                               SliderCaptchaProperties properties) {
-            return new RedisCacheSliderCaptchaApplication(redisTemplate, template, properties);
+            return new RedisCacheSliderCaptchaApplication(redisTemplate, template, sliderCaptchaValidator, properties);
         }
     }
 
@@ -104,8 +112,10 @@ public class SliderCaptchaAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(SliderCaptchaApplication.class)
-        public SliderCaptchaApplication local(SliderCaptchaTemplate template, SliderCaptchaProperties properties) {
-            return new LocalCacheSliderCaptchaApplication(template, properties);
+        public SliderCaptchaApplication local(SliderCaptchaTemplate template,
+                                              SliderCaptchaValidator sliderCaptchaValidator,
+                                              SliderCaptchaProperties properties) {
+            return new LocalCacheSliderCaptchaApplication(template, sliderCaptchaValidator, properties);
         }
     }
 

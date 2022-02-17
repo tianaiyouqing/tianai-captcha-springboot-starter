@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.request;
 
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -18,9 +19,8 @@ public class CaptchaRequest<T> {
     @NotEmpty(message = "验证码ID不能为空")
     private String id;
 
-    @NotNull(message = "验证码百分比不能为空")
-    @Min(value = 0, message = "百分比不能小于0")
-    private Float percentage;
+    @NotNull(message = "滑动轨迹不能为空")
+    private SliderCaptchaTrack sliderCaptchaTrack;
 
     @Valid
     private T form;

@@ -2,6 +2,7 @@ package cloud.tianai.captcha.slider;
 
 
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 
@@ -27,6 +28,15 @@ public interface SliderCaptchaApplication {
      * @return 匹配成功返回true， 否则返回false
      */
     boolean matching(String id, Float percentage);
+
+    /**
+     * 匹配
+     *
+     * @param id                 验证码的ID
+     * @param sliderCaptchaTrack 滑动轨迹
+     * @return 匹配成功返回true， 否则返回false
+     */
+    boolean matching(String id, SliderCaptchaTrack sliderCaptchaTrack);
 
     /**
      * 获取验证码资源管理器

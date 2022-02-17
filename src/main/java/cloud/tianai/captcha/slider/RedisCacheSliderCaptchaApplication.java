@@ -2,6 +2,7 @@ package cloud.tianai.captcha.slider;
 
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,11 +21,11 @@ public class RedisCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
 
     private static final RedisScript<String> SCRIPT_GET_CACHE = new DefaultRedisScript<>("local res = redis.call('get',KEYS[1])  if res == nil  then return nil  else  redis.call('del',KEYS[1]) return res end", String.class);
     private StringRedisTemplate redisTemplate;
-    private String prefix ;
-    private long expire ;
+    private String prefix;
+    private long expire;
 
-    public RedisCacheSliderCaptchaApplication(StringRedisTemplate redisTemplate, SliderCaptchaTemplate template, SliderCaptchaProperties prop) {
-        super(template, prop);
+    public RedisCacheSliderCaptchaApplication(StringRedisTemplate redisTemplate, SliderCaptchaTemplate template, SliderCaptchaValidator sliderCaptchaValidator, SliderCaptchaProperties prop) {
+        super(template, sliderCaptchaValidator, prop);
         this.redisTemplate = redisTemplate;
         this.prefix = prop.getPrefix();
         this.expire = prop.getExpire();

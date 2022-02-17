@@ -4,10 +4,10 @@ package cloud.tianai.captcha.aop;
 import cloud.tianai.captcha.exception.CaptchaValidException;
 import cloud.tianai.captcha.request.CaptchaRequest;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -38,12 +38,12 @@ public class CaptchaInterceptor implements MethodInterceptor, BeanFactoryAware {
         }
 
         String id = captchaRequest.getId();
-        Float percentage = captchaRequest.getPercentage();
-        if (StringUtils.isBlank(id) || percentage == null) {
-            throw new CaptchaValidException("id 或者 percentage 不能为空");
+        SliderCaptchaTrack sliderCaptchaTrack = captchaRequest.getSliderCaptchaTrack();
+        if (sliderCaptchaTrack == null) {
+            throw new CaptchaValidException("sliderCaptchaTrack 不能为空");
         }
 
-        boolean matching = getSliderCaptchaApplication().matching(id, percentage);
+        boolean matching = getSliderCaptchaApplication().matching(id, sliderCaptchaTrack);
         if (matching) {
             return invocation.proceed();
         }

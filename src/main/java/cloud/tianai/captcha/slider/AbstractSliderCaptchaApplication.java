@@ -6,6 +6,8 @@ import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 
@@ -20,12 +22,16 @@ import java.util.UUID;
 public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaApplication {
 
     protected SliderCaptchaTemplate template;
+    protected SliderCaptchaValidator sliderCaptchaValidator;
 
     protected SliderCaptchaProperties prop;
 
-    public AbstractSliderCaptchaApplication(SliderCaptchaTemplate template, SliderCaptchaProperties prop) {
+    public AbstractSliderCaptchaApplication(SliderCaptchaTemplate template,
+                                            SliderCaptchaValidator sliderCaptchaValidator,
+                                            SliderCaptchaProperties prop) {
         this.prop = prop;
         this.template = template;
+        this.sliderCaptchaValidator = sliderCaptchaValidator;
     }
 
     @Override
@@ -42,9 +48,10 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
         }
         // 生成ID
         String id = generatorId();
-
+        // 计算百分比
+        float xPercent = sliderCaptchaValidator.calcPercentage(slideImageInfo.getX(), slideImageInfo.getBgImageWidth());
         // 存到缓存里
-        cacheVerification(id, slideImageInfo.getXPercent());
+        cacheVerification(id, xPercent);
         SliderCaptchaVO verificationVO = new SliderCaptchaVO(slideImageInfo.getBackgroundImage(), slideImageInfo.getSliderImage());
         return CaptchaResponse.of(id, verificationVO);
     }
@@ -56,7 +63,16 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
         if (cachePercentage == null || cachePercentage < 0) {
             return false;
         }
-        return template.percentageContrast(percentage, cachePercentage);
+        return sliderCaptchaValidator.checkPercentage(percentage, cachePercentage);
+    }
+
+    @Override
+    public boolean matching(String id, SliderCaptchaTrack sliderCaptchaTrack) {
+        Float cachePercentage = getPercentForCache(id);
+        if (cachePercentage == null || cachePercentage < 0) {
+            return false;
+        }
+        return sliderCaptchaValidator.valid(sliderCaptchaTrack, cachePercentage);
     }
 
 
