@@ -8,7 +8,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.5</version>
 </dependency>
 ```
 
@@ -69,7 +69,14 @@ captcha:
 ```
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
-
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
+- 扩展接口
+    - ResourceStore 资源存储器，负责存档图片资源和滑块模板
+    - SliderCaptchaResourceManager 资源调度器，负责随机取滑块模板和 背景资源
+    - SliderCaptchaTemplate 滑块验证码模板，核心接口，负责生成展示的滑块底图和 滑块图片
+    - SliderCaptchaValidator 滑块验证器，负责校验用户滑动的轨迹数据 校验用户滑动使用正确或者判断是否是机器人操作
+    - SliderCaptchaApplication 滑块应用程序，上面一些接口的组合和增强，比如负责把验证的数据存到缓存中，用户一般直接使用这个接口方便的生成滑块图片和校验数据
+    - 可以自定义这些接口的实现注入到spring中替换默认的实现
+
 - qq群: 1021884609
  

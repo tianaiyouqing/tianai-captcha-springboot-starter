@@ -35,8 +35,14 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaResourceManager sliderCaptchaResourceManager() {
-        return new DefaultSliderCaptchaResourceManager(new DefaultResourceStore());
+    public ResourceStore resourceStore() {
+        return new DefaultResourceStore();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SliderCaptchaResourceManager sliderCaptchaResourceManager(ResourceStore resourceStore) {
+        return new DefaultSliderCaptchaResourceManager(resourceStore);
     }
 
     @Bean
