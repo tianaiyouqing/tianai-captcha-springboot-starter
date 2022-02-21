@@ -66,6 +66,8 @@ captcha:
     wait-time: 5000
     # 缓存检查间隔 默认是2秒钟
     period: 2000
+    # 是否加入混淆滑块，默认不加入
+    obfuscate: false
 ```
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
