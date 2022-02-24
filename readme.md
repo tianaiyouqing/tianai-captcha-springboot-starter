@@ -27,16 +27,30 @@ public ApiResponse login(@RequestBody CaptchaRequest<LoginForm> request) {
 }
 ```
 -  编码式风格
+
 ```java
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+
 public class Test {
     @Autowired
     private SliderCaptchaApplication application;
-    
+
     public void test() {
-        // 生成滑块验证码
+        // 生成滑块验证码 该方法会通过request获取浏览器内核是否是谷歌内核，如果是则返回webp类型的图片 否则返回jpeg+png类型的图片
+        // 也可以手动指定返回哪种类型的 只需要在request中提供 key为captcha-type的参数(可以放到参数中或者header中) ， 值为 webp、jpeg-png
+        // 来通过参数选择返回哪种类型的图片
         CaptchaResponse<SliderCaptchaVO> res1 = application.generateSliderCaptcha();
+
+        // 也可以用编码判断返回哪种类型的图片, 返回webp类型的图片
+        res1 = application.generateSliderCaptcha(CaptchaImageType.WEBP);
+        // 返回 底图是jpeg，滑块部分是png类型的图片
+        res1 = application.generateSliderCaptcha(CaptchaImageType.JPEG_PNG);
+        // 其它扩展方法可以自己在源码中查看,都有详细注释
+        
         // 匹配验证码是否正确
-        boolean match =  application.matching(res1.getId(), 0.35665);        
+        // 该参数包含了滑动轨迹滑动时间等数据，用于校验滑块验证码。 由前端传入
+        SliderCaptchaTrack sliderCaptchaTrack = new SliderCaptchaTrack();
+        boolean match = application.matching(res1.getId(), sliderCaptchaTrack);
     }
 
 }
@@ -62,6 +76,8 @@ captcha:
     init-default-resource: false
     # 验证码会提前缓存一些生成好的验证数据， 默认是20
     cacheSize: 20
+    # 因为缓存池会缓存 webp 和jpg+png 两种类型的图片， 所有这里可以配置webp生成的数量， 默认是 总缓存的70%(captcha.cacheSize*0.7)
+    webp-cache-size: 16
     # 缓存拉取失败后等待时间 默认是 5秒钟
     wait-time: 5000
     # 缓存检查间隔 默认是2秒钟
