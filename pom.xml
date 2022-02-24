@@ -6,7 +6,7 @@
 
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.7</version>
 
     <name>tianai-captcha-springboot-starter</name>
     <description>滑块验证码springboot启动器</description>
@@ -27,7 +27,7 @@
     <properties>
         <java.version>1.8</java.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <tianai-captcha.version>1.2.6</tianai-captcha.version>
+        <tianai-captcha.version>1.2.7</tianai-captcha.version>
         <!-- 打包跳过单元测试 -->
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -106,10 +106,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.lettuce</groupId>
-            <artifactId>lettuce-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
@@ -120,9 +116,15 @@
             <version>${tianai-captcha.version}</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>jakarta.validation</groupId>-->
+<!--            <artifactId>jakarta.validation-api</artifactId>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

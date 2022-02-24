@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.slider;
 
 
+import cloud.tianai.captcha.template.slider.GenerateParam;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
@@ -19,6 +20,22 @@ public interface SliderCaptchaApplication {
      * @return
      */
     CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha();
+
+    /**
+     * 生成滑块验证码
+     *
+     * @param captchaImageType 要生成webp还是jpg类型的图片
+     * @return CaptchaResponse<SliderCaptchaVO>
+     */
+    CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(CaptchaImageType captchaImageType);
+
+    /**
+     * 生成滑块验证码
+     *
+     * @param param param
+     * @return CaptchaResponse<SliderCaptchaVO>
+     */
+    CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(GenerateParam param);
 
     /**
      * 匹配

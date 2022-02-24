@@ -17,16 +17,30 @@ public class SliderCaptchaProperties {
     private long expire = 60000;
     /** 缓存大小. */
     private Integer cacheSize = 20;
+    /** 其中webp占用缓存大小比例为 70%(一般用谷歌内核的用户多). */
+    private Integer webpCacheSize;
     /** 缓存拉取失败后等待时间. */
     private Integer waitTime = 1000;
     /** 缓存检查间隔. */
     private Integer period = 100;
     /** 是否初始化默认资源. */
     private Boolean initDefaultResource = true;
-    /** 生成的背景图类型.*/
+    /** 生成的背景图类型. */
     private String backgroundFormatName = "jpeg";
-    /** 生成的滑块类型.*/
+    /** 生成的滑块类型. */
     private String sliderFormatName = "png";
-    /** 是否加入混淆滑块，默认不开启.*/
+    /** 是否加入混淆滑块，默认不开启. */
     private Boolean obfuscate = false;
+
+    /**
+     * 其中webp占用缓存大小比例为 70%(一般用谷歌内核的用户多).
+     *
+     * @return default cacheSize*0.7
+     */
+    public Integer getWebpCacheSize() {
+        if (webpCacheSize == null && cacheSize != null) {
+            webpCacheSize = (int) (cacheSize * 0.7);
+        }
+        return webpCacheSize;
+    }
 }

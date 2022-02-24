@@ -38,7 +38,31 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo();
+        return afterGenerateSliderCaptcha(template.getSlideImageInfo());
+    }
+
+    @Override
+    public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(GenerateParam param) {
+        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo(param);
+        return afterGenerateSliderCaptcha(slideImageInfo);
+    }
+
+    @Override
+    public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(CaptchaImageType captchaImageType) {
+        GenerateParam param = new GenerateParam();
+        param.setObfuscate(prop.getObfuscate());
+        if (CaptchaImageType.WEBP.equals(captchaImageType)) {
+            param.setBackgroundFormatName("webp");
+            param.setSliderFormatName("webp");
+        } else {
+            param.setBackgroundFormatName("jpeg");
+            param.setSliderFormatName("png");
+        }
+        return generateSliderCaptcha(param);
+    }
+
+
+    public CaptchaResponse<SliderCaptchaVO> afterGenerateSliderCaptcha(SliderCaptchaInfo slideImageInfo) {
         if (slideImageInfo == null) {
             // 要是生成失败
             throw new SliderCaptchaException("生成滑块验证码失败，验证码生成为空");
@@ -78,7 +102,7 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     /**
      * 缓存验证码
      *
-     * @param id       id
+     * @param id        id
      * @param validData validData
      */
     protected abstract void cacheVerification(String id, Map<String, Object> validData);

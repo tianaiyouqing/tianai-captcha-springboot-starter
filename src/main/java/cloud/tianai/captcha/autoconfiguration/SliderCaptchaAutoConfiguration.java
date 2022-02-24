@@ -3,6 +3,7 @@ package cloud.tianai.captcha.autoconfiguration;
 
 import cloud.tianai.captcha.aop.CaptchaAdvisor;
 import cloud.tianai.captcha.aop.CaptchaInterceptor;
+import cloud.tianai.captcha.plugins.DynamicSliderCaptchaTemplate;
 import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.RedisCacheSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
@@ -49,14 +50,8 @@ public class SliderCaptchaAutoConfiguration {
     @ConditionalOnMissingBean
     public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
                                                        SliderCaptchaResourceManager captchaResourceManager) {
-        SliderCaptchaTemplate template = new StandardSliderCaptchaTemplate(captchaResourceManager, prop.getInitDefaultResource());
-        GenerateParam generateParam = GenerateParam.builder()
-                .backgroundFormatName(prop.getBackgroundFormatName())
-                .sliderFormatName(prop.getSliderFormatName())
-                .obfuscate(prop.getObfuscate())
-                .build();
         // 增加缓存处理
-        return new CacheSliderCaptchaTemplate(template, generateParam, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
+        return new DynamicSliderCaptchaTemplate(prop, captchaResourceManager);
     }
 
     @Bean
