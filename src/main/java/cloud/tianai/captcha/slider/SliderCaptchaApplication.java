@@ -23,15 +23,6 @@ public interface SliderCaptchaApplication {
     /**
      * 匹配
      *
-     * @param id         验证码的ID
-     * @param percentage 百分比
-     * @return 匹配成功返回true， 否则返回false
-     */
-    boolean matching(String id, Float percentage);
-
-    /**
-     * 匹配
-     *
      * @param id                 验证码的ID
      * @param sliderCaptchaTrack 滑动轨迹
      * @return 匹配成功返回true， 否则返回false

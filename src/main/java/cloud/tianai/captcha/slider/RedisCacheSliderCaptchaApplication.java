@@ -3,6 +3,8 @@ package cloud.tianai.captcha.slider;
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -10,6 +12,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,6 +26,7 @@ public class RedisCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
     private StringRedisTemplate redisTemplate;
     private String prefix;
     private long expire;
+    private Gson gson = new Gson();
 
     public RedisCacheSliderCaptchaApplication(StringRedisTemplate redisTemplate, SliderCaptchaTemplate template, SliderCaptchaValidator sliderCaptchaValidator, SliderCaptchaProperties prop) {
         super(template, sliderCaptchaValidator, prop);
@@ -32,19 +36,20 @@ public class RedisCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
     }
 
     @Override
-    protected Float getPercentForCache(String id) {
+    protected Map<String, Object> getVerification(String id) {
         String key = getKey(id);
-        String percentStr = redisTemplate.execute(SCRIPT_GET_CACHE, Collections.singletonList(key));
-        if (StringUtils.isBlank(percentStr)) {
+        String json = redisTemplate.execute(SCRIPT_GET_CACHE, Collections.singletonList(key));
+        if (StringUtils.isBlank(json)) {
             return null;
         }
-        return Float.valueOf(percentStr);
+        return gson.fromJson(json, new TypeToken<Map<String, Object>>() {
+        }.getType());
     }
 
     @Override
-    protected void cacheVerification(String id, Float xPercent) {
+    protected void cacheVerification(String id, Map<String, Object> validData) {
         String key = getKey(id);
-        redisTemplate.opsForValue().set(key, String.valueOf(xPercent), expire, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(key, gson.toJson(validData), expire, TimeUnit.MILLISECONDS);
     }
 
     private String getKey(String id) {

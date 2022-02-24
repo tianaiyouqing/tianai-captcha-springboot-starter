@@ -7,6 +7,7 @@ import cloud.tianai.captcha.cache.ExpiringMap;
 import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApplication {
 
-    private ExpiringMap<String, Float> cache;
+    private ExpiringMap<String, Map<String, Object>> cache;
 
 
     private long expire;
@@ -32,14 +33,14 @@ public class LocalCacheSliderCaptchaApplication extends AbstractSliderCaptchaApp
 
 
     @Override
-    protected Float getPercentForCache(String id) {
-        Float xPercent = cache.remove(id);
-        return xPercent;
+    protected Map<String, Object> getVerification(String id) {
+        Map<String, Object> validData = cache.remove(id);
+        return validData;
     }
 
     @Override
-    protected void cacheVerification(String id, Float xPercent) {
+    protected void cacheVerification(String id, Map<String, Object> validData) {
         cache.remove(id);
-        cache.put(id, xPercent, expire, TimeUnit.MILLISECONDS);
+        cache.put(id, validData, expire, TimeUnit.MILLISECONDS);
     }
 }

@@ -50,8 +50,13 @@ public class SliderCaptchaAutoConfiguration {
     public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
                                                        SliderCaptchaResourceManager captchaResourceManager) {
         SliderCaptchaTemplate template = new StandardSliderCaptchaTemplate(captchaResourceManager, prop.getInitDefaultResource());
+        GenerateParam generateParam = GenerateParam.builder()
+                .backgroundFormatName(prop.getBackgroundFormatName())
+                .sliderFormatName(prop.getSliderFormatName())
+                .obfuscate(prop.getObfuscate())
+                .build();
         // 增加缓存处理
-        return new CacheSliderCaptchaTemplate(template, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
+        return new CacheSliderCaptchaTemplate(template, generateParam, prop.getCacheSize(), prop.getWaitTime(), prop.getPeriod());
     }
 
     @Bean

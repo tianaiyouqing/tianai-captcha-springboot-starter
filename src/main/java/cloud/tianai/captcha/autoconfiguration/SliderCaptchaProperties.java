@@ -23,6 +23,10 @@ public class SliderCaptchaProperties {
     private Integer period = 100;
     /** 是否初始化默认资源. */
     private Boolean initDefaultResource = true;
+    /** 生成的背景图类型.*/
+    private String backgroundFormatName = "jpeg";
+    /** 生成的滑块类型.*/
+    private String sliderFormatName = "png";
     /** 是否加入混淆滑块，默认不开启.*/
     private Boolean obfuscate = false;
 }

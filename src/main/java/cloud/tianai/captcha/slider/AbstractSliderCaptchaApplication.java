@@ -11,6 +11,7 @@ import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -37,39 +38,25 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo(GenerateParam.builder()
-                .backgroundFormatName("jpeg")
-                .sliderFormatName("png")
-                .obfuscate(prop.getObfuscate())
-                .build());
+        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo();
         if (slideImageInfo == null) {
             // 要是生成失败
             throw new SliderCaptchaException("生成滑块验证码失败，验证码生成为空");
         }
         // 生成ID
         String id = generatorId();
-        // 计算百分比
-        float xPercent = sliderCaptchaValidator.calcPercentage(slideImageInfo.getX(), slideImageInfo.getBgImageWidth());
+        // 生成校验数据
+        Map<String, Object> validData = sliderCaptchaValidator.generateSliderCaptchaValidData(slideImageInfo);
         // 存到缓存里
-        cacheVerification(id, xPercent);
+        cacheVerification(id, validData);
         SliderCaptchaVO verificationVO = new SliderCaptchaVO(slideImageInfo.getBackgroundImage(), slideImageInfo.getSliderImage());
         return CaptchaResponse.of(id, verificationVO);
     }
 
-
-    @Override
-    public boolean matching(String id, Float percentage) {
-        Float cachePercentage = getPercentForCache(id);
-        if (cachePercentage == null || cachePercentage < 0) {
-            return false;
-        }
-        return sliderCaptchaValidator.checkPercentage(percentage, cachePercentage);
-    }
-
     @Override
     public boolean matching(String id, SliderCaptchaTrack sliderCaptchaTrack) {
-        Float cachePercentage = getPercentForCache(id);
-        if (cachePercentage == null || cachePercentage < 0) {
+        Map<String, Object> cachePercentage = getVerification(id);
+        if (cachePercentage == null) {
             return false;
         }
         return sliderCaptchaValidator.valid(sliderCaptchaTrack, cachePercentage);
@@ -84,17 +71,17 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
      * 通过缓存获取百分比
      *
      * @param id 验证码ID
-     * @return Float
+     * @return Map<String, Object>
      */
-    protected abstract Float getPercentForCache(String id);
+    protected abstract Map<String, Object> getVerification(String id);
 
     /**
      * 缓存验证码
      *
      * @param id       id
-     * @param xPercent ID对应的百分比
+     * @param validData validData
      */
-    protected abstract void cacheVerification(String id, Float xPercent);
+    protected abstract void cacheVerification(String id, Map<String, Object> validData);
 
     @Override
     public SliderCaptchaResourceManager getSliderCaptchaResourceManager() {
