@@ -1,9 +1,12 @@
 package cloud.tianai.captcha.slider;
 
 
+import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.template.slider.GenerateParam;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 
@@ -52,4 +55,47 @@ public interface SliderCaptchaApplication {
      * @return SliderCaptchaResourceManager
      */
     SliderCaptchaResourceManager getSliderCaptchaResourceManager();
+
+    /**
+     * 设置 SliderCaptchaValidator 验证码验证器
+     *
+     * @param sliderCaptchaValidator sliderCaptchaValidator
+     */
+    void setSliderCaptchaValidator(SliderCaptchaValidator sliderCaptchaValidator);
+
+    /**
+     * 设置 SliderCaptchaTemplate 验证码生成器
+     *
+     * @param sliderCaptchaTemplate SliderCaptchaTemplate
+     */
+    void setSliderCaptchaTemplate(SliderCaptchaTemplate sliderCaptchaTemplate);
+
+    /**
+     * 设置 缓存存储器
+     *
+     * @param cacheStore cacheStore
+     */
+    void setCacheStore(CacheStore cacheStore);
+
+    /**
+     * 获取验证码验证器
+     *
+     * @return SliderCaptchaValidator
+     */
+    SliderCaptchaValidator getSliderCaptchaValidator();
+
+    /**
+     * 获取验证码生成器
+     *
+     * @return SliderCaptchaTemplate
+     */
+    SliderCaptchaTemplate getSliderCaptchaTemplate();
+
+    /**
+     * 获取缓存存储器
+     *
+     * @return CacheStore
+     */
+    CacheStore getCacheStore();
+
 }

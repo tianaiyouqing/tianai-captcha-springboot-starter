@@ -1,6 +1,8 @@
 package cloud.tianai.captcha.slider;
 
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
+import cloud.tianai.captcha.exception.CaptchaValidException;
+import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.template.slider.GenerateParam;
 import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
@@ -10,9 +12,11 @@ import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -20,30 +24,33 @@ import java.util.UUID;
  * @Date 2020/5/29 8:52
  * @Description 抽象的 滑块验证码
  */
-public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaApplication {
+@Slf4j
+public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication {
 
-    protected SliderCaptchaTemplate template;
-    protected SliderCaptchaValidator sliderCaptchaValidator;
+    private SliderCaptchaTemplate template;
+    private SliderCaptchaValidator sliderCaptchaValidator;
+    private SliderCaptchaProperties prop;
+    private CacheStore cacheStore;
 
-    protected SliderCaptchaProperties prop;
-
-    public AbstractSliderCaptchaApplication(SliderCaptchaTemplate template,
-                                            SliderCaptchaValidator sliderCaptchaValidator,
-                                            SliderCaptchaProperties prop) {
+    public DefaultSliderCaptchaApplication(SliderCaptchaTemplate template,
+                                           SliderCaptchaValidator sliderCaptchaValidator,
+                                           CacheStore cacheStore,
+                                           SliderCaptchaProperties prop) {
         this.prop = prop;
-        this.template = template;
-        this.sliderCaptchaValidator = sliderCaptchaValidator;
+        setSliderCaptchaTemplate(template);
+        setSliderCaptchaValidator(sliderCaptchaValidator);
+        setCacheStore(cacheStore);
     }
 
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        return afterGenerateSliderCaptcha(template.getSlideImageInfo());
+        return afterGenerateSliderCaptcha(getSliderCaptchaTemplate().getSlideImageInfo());
     }
 
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(GenerateParam param) {
-        SliderCaptchaInfo slideImageInfo = template.getSlideImageInfo(param);
+        SliderCaptchaInfo slideImageInfo = getSliderCaptchaTemplate().getSlideImageInfo(param);
         return afterGenerateSliderCaptcha(slideImageInfo);
     }
 
@@ -70,7 +77,7 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
         // 生成ID
         String id = generatorId();
         // 生成校验数据
-        Map<String, Object> validData = sliderCaptchaValidator.generateSliderCaptchaValidData(slideImageInfo);
+        Map<String, Object> validData = getSliderCaptchaValidator().generateSliderCaptchaValidData(slideImageInfo);
         // 存到缓存里
         cacheVerification(id, validData);
         SliderCaptchaVO verificationVO = new SliderCaptchaVO(slideImageInfo.getBackgroundImage(), slideImageInfo.getSliderImage());
@@ -83,7 +90,7 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
         if (cachePercentage == null) {
             return false;
         }
-        return sliderCaptchaValidator.valid(sliderCaptchaTrack, cachePercentage);
+        return getSliderCaptchaValidator().valid(sliderCaptchaTrack, cachePercentage);
     }
 
 
@@ -97,7 +104,9 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
      * @param id 验证码ID
      * @return Map<String, Object>
      */
-    protected abstract Map<String, Object> getVerification(String id);
+    protected Map<String, Object> getVerification(String id) {
+        return getCacheStore().getAndRemoveCache(getKey(id));
+    }
 
     /**
      * 缓存验证码
@@ -105,10 +114,49 @@ public abstract class AbstractSliderCaptchaApplication implements SliderCaptchaA
      * @param id        id
      * @param validData validData
      */
-    protected abstract void cacheVerification(String id, Map<String, Object> validData);
+    protected void cacheVerification(String id, Map<String, Object> validData) {
+        if (!getCacheStore().setCache(getKey(id), validData, prop.getExpire(), TimeUnit.MILLISECONDS)) {
+            log.error("缓存验证码数据失败， id={}, validData={}", id, validData);
+            throw new CaptchaValidException("缓存验证码数据失败");
+        }
+    }
+
+    protected String getKey(String id) {
+        return prop.getPrefix().concat(":").concat(id);
+    }
 
     @Override
     public SliderCaptchaResourceManager getSliderCaptchaResourceManager() {
-        return template.getSlideImageResourceManager();
+        return getSliderCaptchaTemplate().getSlideImageResourceManager();
+    }
+
+    @Override
+    public void setSliderCaptchaValidator(SliderCaptchaValidator sliderCaptchaValidator) {
+        this.sliderCaptchaValidator = sliderCaptchaValidator;
+    }
+
+    @Override
+    public void setSliderCaptchaTemplate(SliderCaptchaTemplate sliderCaptchaTemplate) {
+        this.template = sliderCaptchaTemplate;
+    }
+
+    @Override
+    public void setCacheStore(CacheStore cacheStore) {
+        this.cacheStore = cacheStore;
+    }
+
+    @Override
+    public SliderCaptchaValidator getSliderCaptchaValidator() {
+        return this.sliderCaptchaValidator;
+    }
+
+    @Override
+    public SliderCaptchaTemplate getSliderCaptchaTemplate() {
+        return this.template;
+    }
+
+    @Override
+    public CacheStore getCacheStore() {
+        return this.cacheStore;
     }
 }

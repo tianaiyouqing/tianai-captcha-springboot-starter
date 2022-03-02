@@ -31,7 +31,8 @@ public class SliderCaptchaProperties {
     private String sliderFormatName = "png";
     /** 是否加入混淆滑块，默认不开启. */
     private Boolean obfuscate = false;
-
+    /** 二次验证配置.*/
+    private SecondaryVerificationProperties secondary;
     /**
      * 其中webp占用缓存大小比例为 70%(一般用谷歌内核的用户多).
      *

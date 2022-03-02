@@ -1,12 +1,5 @@
 package cloud.tianai.captcha;
 
-import cloud.tianai.captcha.slider.LocalCacheSliderCaptchaApplication;
-import cloud.tianai.captcha.vo.CaptchaResponse;
-import cloud.tianai.captcha.vo.SliderCaptchaVO;
-import org.springframework.util.StopWatch;
-
-import java.util.concurrent.TimeUnit;
-
 public class CaptchaTest {
 
     public static void main(String[] args) throws InterruptedException {
