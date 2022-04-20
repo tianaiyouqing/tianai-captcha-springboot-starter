@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.cache;
 
 
-import cloud.tianai.captcha.template.slider.NamedThreadFactory;
+import cloud.tianai.captcha.template.slider.common.util.NamedThreadFactory;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 

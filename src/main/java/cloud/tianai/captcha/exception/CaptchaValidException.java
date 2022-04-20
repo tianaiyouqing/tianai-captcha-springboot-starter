@@ -1,6 +1,6 @@
 package cloud.tianai.captcha.exception;
 
-import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
+import cloud.tianai.captcha.template.slider.common.exception.SliderCaptchaException;
 
 /**
  * @Author: 天爱有情

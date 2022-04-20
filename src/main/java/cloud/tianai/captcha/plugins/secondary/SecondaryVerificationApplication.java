@@ -3,7 +3,7 @@ package cloud.tianai.captcha.plugins.secondary;
 import cloud.tianai.captcha.autoconfiguration.SecondaryVerificationProperties;
 import cloud.tianai.captcha.slider.FilterSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,20 +32,26 @@ public class SecondaryVerificationApplication extends FilterSliderCaptchaApplica
         return match;
     }
 
+    /**
+     * 二次缓存验证
+     * @param id id
+     * @return boolean
+     */
     public boolean secondaryVerification(String id) {
         Map<String, Object> cache = target.getCacheStore().getAndRemoveCache(getKey(id));
         return cache != null;
     }
 
-
+    /**
+     * 添加二次缓存验证记录
+     * @param id id
+     * @param sliderCaptchaTrack sliderCaptchaTrack
+     */
     protected void addSecondaryVerification(String id, SliderCaptchaTrack sliderCaptchaTrack) {
         target.getCacheStore().setCache(getKey(id), Collections.emptyMap(), prop.getExpire(), TimeUnit.MILLISECONDS);
     }
 
-    private String getKey(String id) {
+    protected String getKey(String id) {
         return prop.getKeyPrefix().concat(":").concat(id);
-
     }
-
-
 }

@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.autoconfiguration;
 
-import cloud.tianai.captcha.template.slider.CacheSliderCaptchaTemplate;
-import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.impl.CacheSliderCaptchaGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,9 +22,9 @@ public class CacheCaptchaTemplateListener implements ApplicationListener<Applica
     public void onApplicationEvent(ApplicationReadyEvent event) {
         ConfigurableApplicationContext applicationContext = event.getApplicationContext();
         try {
-            SliderCaptchaTemplate bean = applicationContext.getBean(SliderCaptchaTemplate.class);
-            if (bean instanceof CacheSliderCaptchaTemplate) {
-                CacheSliderCaptchaTemplate cacheSliderCaptchaTemplate = (CacheSliderCaptchaTemplate) bean;
+            SliderCaptchaGenerator bean = applicationContext.getBean(SliderCaptchaGenerator.class);
+            if (bean instanceof CacheSliderCaptchaGenerator) {
+                CacheSliderCaptchaGenerator cacheSliderCaptchaTemplate = (CacheSliderCaptchaGenerator) bean;
                 // 初始化调度器
                 cacheSliderCaptchaTemplate.initSchedule();
             }

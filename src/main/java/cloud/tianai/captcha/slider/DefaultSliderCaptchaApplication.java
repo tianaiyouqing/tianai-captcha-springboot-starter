@@ -3,13 +3,13 @@ package cloud.tianai.captcha.slider;
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.exception.CaptchaValidException;
 import cloud.tianai.captcha.slider.store.CacheStore;
-import cloud.tianai.captcha.template.slider.GenerateParam;
-import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
-import cloud.tianai.captcha.template.slider.SliderCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.SliderCaptchaTemplate;
-import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.common.exception.SliderCaptchaException;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication {
 
-    private SliderCaptchaTemplate template;
+    private SliderCaptchaGenerator template;
     private SliderCaptchaValidator sliderCaptchaValidator;
     private SliderCaptchaProperties prop;
     private CacheStore cacheStore;
 
-    public DefaultSliderCaptchaApplication(SliderCaptchaTemplate template,
+    public DefaultSliderCaptchaApplication(SliderCaptchaGenerator template,
                                            SliderCaptchaValidator sliderCaptchaValidator,
                                            CacheStore cacheStore,
                                            SliderCaptchaProperties prop) {
@@ -45,12 +45,12 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        return afterGenerateSliderCaptcha(getSliderCaptchaTemplate().getSlideImageInfo());
+        return afterGenerateSliderCaptcha(getSliderCaptchaTemplate().generateSlideImageInfo());
     }
 
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(GenerateParam param) {
-        SliderCaptchaInfo slideImageInfo = getSliderCaptchaTemplate().getSlideImageInfo(param);
+        SliderCaptchaInfo slideImageInfo = getSliderCaptchaTemplate().generateSlideImageInfo(param);
         return afterGenerateSliderCaptcha(slideImageInfo);
     }
 
@@ -136,7 +136,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public void setSliderCaptchaTemplate(SliderCaptchaTemplate sliderCaptchaTemplate) {
+    public void setSliderCaptchaTemplate(SliderCaptchaGenerator sliderCaptchaTemplate) {
         this.template = sliderCaptchaTemplate;
     }
 
@@ -151,7 +151,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public SliderCaptchaTemplate getSliderCaptchaTemplate() {
+    public SliderCaptchaGenerator getSliderCaptchaTemplate() {
         return this.template;
     }
 

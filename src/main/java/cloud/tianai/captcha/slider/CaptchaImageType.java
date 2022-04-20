@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.slider;
 
-import cloud.tianai.captcha.template.slider.GenerateParam;
 import lombok.Getter;
 
 /**

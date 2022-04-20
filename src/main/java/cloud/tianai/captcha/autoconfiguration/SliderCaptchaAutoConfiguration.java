@@ -3,16 +3,20 @@ package cloud.tianai.captcha.autoconfiguration;
 
 import cloud.tianai.captcha.aop.CaptchaAdvisor;
 import cloud.tianai.captcha.aop.CaptchaInterceptor;
-import cloud.tianai.captcha.plugins.DynamicSliderCaptchaTemplate;
+import cloud.tianai.captcha.plugins.DynamicSliderCaptchaGenerator;
 import cloud.tianai.captcha.plugins.secondary.SecondaryVerificationApplication;
 import cloud.tianai.captcha.slider.DefaultSliderCaptchaApplication;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
 import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.slider.store.impl.LocalCacheStore;
 import cloud.tianai.captcha.slider.store.impl.RedisCacheStore;
-import cloud.tianai.captcha.template.slider.*;
-import cloud.tianai.captcha.template.slider.validator.BasicCaptchaTrackValidator;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.resource.ResourceStore;
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.impl.DefaultResourceStore;
+import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.impl.BasicCaptchaTrackValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -51,10 +55,10 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaTemplate sliderCaptchaTemplate(SliderCaptchaProperties prop,
-                                                       SliderCaptchaResourceManager captchaResourceManager) {
+    public SliderCaptchaGenerator sliderCaptchaTemplate(SliderCaptchaProperties prop,
+                                                        SliderCaptchaResourceManager captchaResourceManager) {
         // 增加缓存处理
-        return new DynamicSliderCaptchaTemplate(prop, captchaResourceManager);
+        return new DynamicSliderCaptchaGenerator(prop, captchaResourceManager);
     }
 
     @Bean
@@ -87,12 +91,12 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaApplication sliderCaptchaApplication(SliderCaptchaTemplate template,
+    public SliderCaptchaApplication sliderCaptchaApplication(SliderCaptchaGenerator captchaGenerator,
                                                              SliderCaptchaValidator sliderCaptchaValidator,
                                                              CacheStore cacheStore,
                                                              SliderCaptchaProperties prop) {
-        SliderCaptchaApplication target = new DefaultSliderCaptchaApplication(template, sliderCaptchaValidator, cacheStore, prop);
-        if (Boolean.TRUE.equals(prop.getSecondary().getEnabled())) {
+        SliderCaptchaApplication target = new DefaultSliderCaptchaApplication(captchaGenerator, sliderCaptchaValidator, cacheStore, prop);
+        if (prop.getSecondary() != null && Boolean.TRUE.equals(prop.getSecondary().getEnabled())) {
             target =  new SecondaryVerificationApplication(target, prop.getSecondary());
         }
         return target;

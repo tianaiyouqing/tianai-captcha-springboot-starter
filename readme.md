@@ -8,7 +8,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.2.7</version>
+    <version>1.3.0.RELEASE</version>
 </dependency>
 ```
 
@@ -74,16 +74,45 @@ captcha:
     expire: 60000
     # 使用加载系统自带的资源， 默认是true
     init-default-resource: false
-    # 验证码会提前缓存一些生成好的验证数据， 默认是20
-    cacheSize: 20
-    # 因为缓存池会缓存 webp 和jpg+png 两种类型的图片， 所有这里可以配置webp生成的数量， 默认是 总缓存的70%(captcha.cacheSize*0.7)
-    webp-cache-size: 16
-    # 缓存拉取失败后等待时间 默认是 5秒钟
-    wait-time: 5000
-    # 缓存检查间隔 默认是2秒钟
-    period: 2000
     # 是否加入混淆滑块，默认不加入
     obfuscate: false
+    cache:
+      # 缓存控制， 默认为false不开启
+      enabled: true
+      # 验证码会提前缓存一些生成好的验证数据， 默认是20
+      cacheSize: 20
+      # 因为缓存池会缓存 webp 和jpg+png 两种类型的图片， 所有这里可以配置webp生成的数量， 默认是 总缓存的70%(captcha.cacheSize*0.7)
+      webp-cache-size: 16
+      # 缓存拉取失败后等待时间 默认是 5秒钟
+      wait-time: 5000
+      # 缓存检查间隔 默认是2秒钟
+      period: 2000
+    secondary: 
+      # 二次验证， 默认false 不开启
+      enabled: true
+      # 二次验证过期时间， 默认 2分钟
+      expire: 120000
+      # 二次验证缓存key前缀，默认是 captcha:slider:secondary
+      keyPrefix: captcha:slider:secondary
+```
+- 二次验证操作
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+public class Demo {
+    @Autowired
+    private SecondaryVerificationApplication sva;
+    
+    // 如果开启了二次验证 ， 进行二次验证校验的时候 
+    public void test() {
+        // 该id是生成滑块验证码时候的id
+        String id = ""; 
+        // 进行二次验证
+        boolean valid = sva.secondaryVerification(id);
+        System.out.println("二次验证结果:" + valid);
+    }
+}
+
 ```
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下

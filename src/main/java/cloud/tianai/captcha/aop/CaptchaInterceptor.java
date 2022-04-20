@@ -4,7 +4,7 @@ package cloud.tianai.captcha.aop;
 import cloud.tianai.captcha.exception.CaptchaValidException;
 import cloud.tianai.captcha.request.CaptchaRequest;
 import cloud.tianai.captcha.slider.SliderCaptchaApplication;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
