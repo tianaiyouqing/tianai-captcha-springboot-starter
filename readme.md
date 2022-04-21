@@ -107,7 +107,6 @@ captcha:
       keyPrefix: captcha:slider:secondary
 ```
 
-## 扩展
 ### 二次验证操作
 
 ```java
@@ -150,6 +149,25 @@ public class Demo {
   - 基于 `SliderCaptchaApplication`进行扩展 实现了二次验证功能， 
   - 改功能默认不开启
   - 可以在配置文件中配置 `captcha.slider.secondary.endbled=true`进行手动开启
+  - 使用例子
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class Demo {
+    @Autowired
+    private SecondaryVerificationApplication sva;
+
+    // 如果开启了二次验证 ， 进行二次验证校验的时候 
+    public void test() {
+        // 该id是生成滑块验证码时候的id
+        String id = "";
+        // 进行二次验证
+        boolean valid = sva.secondaryVerification(id);
+        System.out.println("二次验证结果:" + valid);
+    }
+}
+```
+```
 ## 其它
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
