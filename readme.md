@@ -126,17 +126,30 @@ public class Demo {
         System.out.println("二次验证结果:" + valid);
     }
 }
-
 ```
+
 ## 自定义扩展
 > 依赖于 tianai-captcha 的高扩展性，
 > 可以自定义 如下实现 然后直接注入到spring中即可替换默认实现,实现自定义扩展
 - 生成器(`SliderCaptchaGenerator`) -- 主要负责生成滑块验证码所需的图片
-- 校验器(`SliderCaptchaValidato`r) -- 主要负责校验用户滑动的行为轨迹是否合规
+- 校验器(`SliderCaptchaValidator`) -- 主要负责校验用户滑动的行为轨迹是否合规
 - 资源管理器(`SliderCaptchaResourceManager`) -- 主要负责读取验证码背景图片和模板图片等
 - 资源存储(`ResourceStore`) -- 负责存储背景图和模板图
 - 资源提供者(`ResourceProvider`) -- 负责将资源存储器中对应的资源转换为文件流
-- SliderCaptchaApplication 滑块应用程序，上面一些接口的组合和增强，比如负责把验证的数据存到缓存中，用户一般直接使用这个接口方便的生成滑块图片和校验数据
+- 滑块应用程序(`SliderCaptchaApplication`) ，上面一些接口的组合和增强，比如负责把验证的数据存到缓存中，用户一般直接使用这个接口方便的生成滑块图片和校验数据
+
+## 基于 tianai-captcha 的一些默认扩展
+- `DynamicSliderCaptchaGenerator` 动态滑块验证码生成器
+  - 基于 `SliderCaptchaGenerator`进行扩展
+  - 可以通过url或者header中传入 属性名为 `captcha-type` 属性值为 `webp`或者`jpeg-png` 来指定生成哪种类型的图片格式
+  - 如果不指定 默认会通过header 判断如果是谷歌浏览器 默认返回 `webp`格式的图片，
+  - 该扩展已经启动时默认装配，
+  - 如果不想用该功能可以手动把 `StandardSliderCaptchaGenerator`或者`CacheSliderCaptchaGenerator` 或者自定义实现注入到spring中进行替换
+
+- `SecondaryVerificationApplication` 二次验证扩展
+  - 基于 `SliderCaptchaApplication`进行扩展 实现了二次验证功能， 
+  - 改功能默认不开启
+  - 可以在配置文件中配置 `captcha.slider.secondary.endbled=true`进行手动开启
 ## 其它
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
 - 本地缓存参考了本人写的 [expiring-map](https://gitee.com/tianai/expiring-map) (使用redis淘汰策略) 做过期处理, 有兴趣可以看一下
