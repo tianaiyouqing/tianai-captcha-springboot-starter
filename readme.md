@@ -126,7 +126,7 @@ captcha:
 
 - `SecondaryVerificationApplication` 二次验证扩展
   - 基于 `SliderCaptchaApplication`进行扩展 实现了二次验证功能， 
-  - 改功能默认不开启
+  - 该功能默认不开启
   - 可以在配置文件中配置 `captcha.slider.secondary.endbled=true`进行手动开启
   - 使用例子
 ```java
@@ -134,18 +134,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class Demo {
     @Autowired
-    private SecondaryVerificationApplication sva;
+    private SliderCaptchaApplication sca;
 
-    // 如果开启了二次验证 ， 进行二次验证校验的时候 
-    public void test() {
-        // 该id是生成滑块验证码时候的id
-        String id = "";
-        // 进行二次验证
-        boolean valid = sva.secondaryVerification(id);
-        System.out.println("二次验证结果:" + valid);
+    @GetMapping("/check2")
+    @ResponseBody
+    public boolean check2Captcha(@RequestParam("id") String id) {
+        // 如果开启了二次验证
+        if (sliderCaptchaApplication instanceof SecondaryVerificationApplication) {
+            return ((SecondaryVerificationApplication)sliderCaptchaApplication).secondaryVerification(id);
+        }
+        return false;
     }
 }
-```
 ```
 ## 其它
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
