@@ -106,27 +106,6 @@ captcha:
       # 二次验证缓存key前缀，默认是 captcha:slider:secondary
       keyPrefix: captcha:slider:secondary
 ```
-
-### 二次验证操作
-
-```java
-import org.springframework.beans.factory.annotation.Autowired;
-
-public class Demo {
-    @Autowired
-    private SecondaryVerificationApplication sva;
-
-    // 如果开启了二次验证 ， 进行二次验证校验的时候 
-    public void test() {
-        // 该id是生成滑块验证码时候的id
-        String id = "";
-        // 进行二次验证
-        boolean valid = sva.secondaryVerification(id);
-        System.out.println("二次验证结果:" + valid);
-    }
-}
-```
-
 ## 自定义扩展
 > 依赖于 tianai-captcha 的高扩展性，
 > 可以自定义 如下实现 然后直接注入到spring中即可替换默认实现,实现自定义扩展
