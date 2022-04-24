@@ -10,11 +10,11 @@ import cloud.tianai.captcha.slider.SliderCaptchaApplication;
 import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.slider.store.impl.LocalCacheStore;
 import cloud.tianai.captcha.slider.store.impl.RedisCacheStore;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.impl.DefaultResourceStore;
-import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.impl.BasicCaptchaTrackValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -49,14 +49,14 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaResourceManager sliderCaptchaResourceManager(ResourceStore resourceStore) {
-        return new DefaultSliderCaptchaResourceManager(resourceStore);
+    public ImageCaptchaResourceManager sliderCaptchaResourceManager(ResourceStore resourceStore) {
+        return new DefaultImageCaptchaResourceManager(resourceStore);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaGenerator sliderCaptchaTemplate(SliderCaptchaProperties prop,
-                                                        SliderCaptchaResourceManager captchaResourceManager) {
+    public ImageCaptchaGenerator sliderCaptchaTemplate(SliderCaptchaProperties prop,
+                                                       ImageCaptchaResourceManager captchaResourceManager) {
         // 增加缓存处理
         return new DynamicSliderCaptchaGenerator(prop, captchaResourceManager);
     }
@@ -91,16 +91,17 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaApplication sliderCaptchaApplication(SliderCaptchaGenerator captchaGenerator,
+    public SliderCaptchaApplication sliderCaptchaApplication(ImageCaptchaGenerator captchaGenerator,
                                                              SliderCaptchaValidator sliderCaptchaValidator,
                                                              CacheStore cacheStore,
                                                              SliderCaptchaProperties prop) {
         SliderCaptchaApplication target = new DefaultSliderCaptchaApplication(captchaGenerator, sliderCaptchaValidator, cacheStore, prop);
         if (prop.getSecondary() != null && Boolean.TRUE.equals(prop.getSecondary().getEnabled())) {
-            target =  new SecondaryVerificationApplication(target, prop.getSecondary());
+            target = new SecondaryVerificationApplication(target, prop.getSecondary());
         }
         return target;
     }
+
     /**
      * @Author: 天爱有情
      * @date 2020/10/27 14:06

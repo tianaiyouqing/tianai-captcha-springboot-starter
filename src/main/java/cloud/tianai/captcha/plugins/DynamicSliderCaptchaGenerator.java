@@ -2,13 +2,12 @@ package cloud.tianai.captcha.plugins;
 
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaCacheProperties;
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
-import cloud.tianai.captcha.slider.CaptchaImageType;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
-import cloud.tianai.captcha.template.slider.generator.impl.CacheSliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.impl.StandardSliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.template.slider.generator.impl.CacheImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.impl.MultiImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,37 +26,26 @@ import javax.servlet.http.HttpServletRequest;
  * @Description 根据浏览器内核判断返回 webp类型还是jpg+png类型的验证码
  */
 @Slf4j
-public class DynamicSliderCaptchaGenerator implements SliderCaptchaGenerator, ApplicationListener<ApplicationReadyEvent> {
+@Getter
+@Setter
+public class DynamicSliderCaptchaGenerator implements ImageCaptchaGenerator, ApplicationListener<ApplicationReadyEvent> {
 
     protected SliderCaptchaProperties prop;
-    protected SliderCaptchaResourceManager captchaResourceManager;
+    protected ImageCaptchaResourceManager captchaResourceManager;
 
-    protected CacheSliderCaptchaGenerator webpCacheCaptchaTemplate;
-    protected CacheSliderCaptchaGenerator standardCacheCaptchaTemplate;
-    protected SliderCaptchaGenerator captchaTemplate;
+    protected CacheImageCaptchaGenerator cacheImageCaptchaGenerator;
+    protected ImageCaptchaGenerator imageCaptchaGenerator;
 
-    protected GenerateParam standardGenerateParam;
-    protected GenerateParam webpGenerateParam;
     protected boolean webApplication;
     @Getter
     @Setter
     protected String captchaTypeKey = "captcha-type";
 
     public DynamicSliderCaptchaGenerator(SliderCaptchaProperties prop,
-                                         SliderCaptchaResourceManager captchaResourceManager) {
+                                         ImageCaptchaResourceManager captchaResourceManager) {
         this.prop = prop;
         this.captchaResourceManager = captchaResourceManager;
-        captchaTemplate = new StandardSliderCaptchaGenerator(captchaResourceManager, prop.getInitDefaultResource());
-        standardGenerateParam = GenerateParam.builder()
-                .backgroundFormatName("jpeg")
-                .sliderFormatName("png")
-                .obfuscate(prop.getObfuscate())
-                .build();
-        webpGenerateParam = GenerateParam.builder()
-                .backgroundFormatName("webp")
-                .sliderFormatName("webp")
-                .obfuscate(prop.getObfuscate())
-                .build();
+        imageCaptchaGenerator = new MultiImageCaptchaGenerator(captchaResourceManager, prop.getInitDefaultResource());
         // 判断是否是web应用
         webApplication = isWebApplication();
     }
@@ -73,35 +61,32 @@ public class DynamicSliderCaptchaGenerator implements SliderCaptchaGenerator, Ap
         if (cacheProp == null || !Boolean.TRUE.equals(cacheProp.getEnabled())) {
             return;
         }
-        Integer allCacheSize = cacheProp.getCacheSize();
-        int webpCacheSize = cacheProp.getWebpCacheSize();
-        if (webpCacheSize > 0) {
-            webpCacheCaptchaTemplate = new CacheSliderCaptchaGenerator(captchaTemplate, webpGenerateParam, webpCacheSize, cacheProp.getWaitTime(), cacheProp.getPeriod());
-            webpCacheCaptchaTemplate.setRequiredGetCaptcha(false);
-            webpCacheCaptchaTemplate.initSchedule();
+        Integer cacheSize = cacheProp.getCacheSize();
+        if (cacheSize != null && cacheSize > 0) {
+            cacheImageCaptchaGenerator = new CacheImageCaptchaGenerator(imageCaptchaGenerator, cacheSize, cacheProp.getWaitTime(), cacheProp.getPeriod());
+            cacheImageCaptchaGenerator.setRequiredGetCaptcha(false);
+            cacheImageCaptchaGenerator.initSchedule();
         }
-        int ordinaryCacheSize = allCacheSize - webpCacheSize;
-        standardCacheCaptchaTemplate = new CacheSliderCaptchaGenerator(captchaTemplate,
-                standardGenerateParam, ordinaryCacheSize, cacheProp.getWaitTime(), cacheProp.getPeriod());
-        standardCacheCaptchaTemplate.setRequiredGetCaptcha(false);
-        standardCacheCaptchaTemplate.initSchedule();
     }
 
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo() {
+    public ImageCaptchaInfo generateCaptchaImage(String t) {
         // 判断是ie内核还是谷歌内核
+        GenerateParam generateParam = new GenerateParam();
+        generateParam.setType(t);
         if (webApplication) {
             ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (requestAttributes != null) {
                 HttpServletRequest request = requestAttributes.getRequest();
                 String type = getImageTypeByRequest(request);
                 if ("webp".equalsIgnoreCase(type)) {
-                    return requiredGetSliderCaptchaInfo(true, true);
+                    generateParam.setBackgroundFormatName("webp");
+                    generateParam.setSliderFormatName("webp");
                 }
             }
         }
         // 如果不是web应用，默认读标准图片
-        return requiredGetSliderCaptchaInfo(false, true);
+        return requiredGetSliderCaptchaInfo(generateParam);
     }
 
     public String getImageTypeByRequest(HttpServletRequest request) {
@@ -121,31 +106,26 @@ public class DynamicSliderCaptchaGenerator implements SliderCaptchaGenerator, Ap
     }
 
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo(String backgroundFormatName, String sliderFormatName) {
-        CaptchaImageType type = CaptchaImageType.getType(backgroundFormatName, sliderFormatName);
-        if (CaptchaImageType.WEBP.equals(CaptchaImageType.getType(backgroundFormatName, sliderFormatName))) {
-            return requiredGetSliderCaptchaInfo(true, false);
-        } else if (CaptchaImageType.JPEG_PNG.equals(type)) {
-            return requiredGetSliderCaptchaInfo(false, true);
-        }
-        return captchaTemplate.generateSlideImageInfo(backgroundFormatName, sliderFormatName);
+    public ImageCaptchaInfo generateCaptchaImage(String t, String backgroundFormatName, String sliderFormatName) {
+        GenerateParam generateParam = GenerateParam.builder()
+                .type(t)
+                .backgroundFormatName(backgroundFormatName)
+                .sliderFormatName(sliderFormatName)
+                .build();
+        return requiredGetSliderCaptchaInfo(generateParam);
     }
 
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo(GenerateParam param) {
+    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         if (prop.getObfuscate().equals(param.getObfuscate())) {
-            return generateSlideImageInfo(param.getBackgroundFormatName(), param.getSliderFormatName());
+            return generateCaptchaImage(param.getType(), param.getBackgroundFormatName(), param.getSliderFormatName());
         }
-        return captchaTemplate.generateSlideImageInfo(param);
+        return imageCaptchaGenerator.generateCaptchaImage(param);
     }
 
-    @Override
-    public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
-        return captchaTemplate.percentageContrast(newPercentage, oriPercentage);
-    }
 
     @Override
-    public SliderCaptchaResourceManager getSlideImageResourceManager() {
+    public ImageCaptchaResourceManager getImageResourceManager() {
         return captchaResourceManager;
     }
 
@@ -154,24 +134,13 @@ public class DynamicSliderCaptchaGenerator implements SliderCaptchaGenerator, Ap
         initCache();
     }
 
-    public SliderCaptchaInfo requiredGetSliderCaptchaInfo(boolean tryWebpCacheRead, boolean tryStandardCacheRead) {
-        SliderCaptchaInfo sliderCaptchaInfo = null;
-        if (tryWebpCacheRead && webpCacheCaptchaTemplate != null) {
-            sliderCaptchaInfo = webpCacheCaptchaTemplate.generateSlideImageInfo();
+    public ImageCaptchaInfo requiredGetSliderCaptchaInfo(GenerateParam param) {
+        ImageCaptchaInfo sliderCaptchaInfo = null;
+        if (cacheImageCaptchaGenerator != null) {
+            sliderCaptchaInfo = cacheImageCaptchaGenerator.generateCaptchaImage(param, false);
         }
-        if (sliderCaptchaInfo == null && standardCacheCaptchaTemplate != null && tryStandardCacheRead) {
-            sliderCaptchaInfo = standardCacheCaptchaTemplate.generateSlideImageInfo();
-        }
-        if (sliderCaptchaInfo == null && captchaTemplate != null) {
-            GenerateParam generateParam;
-            if (tryWebpCacheRead) {
-                generateParam = webpGenerateParam;
-            }else if (tryStandardCacheRead) {
-                generateParam = standardGenerateParam;
-            }else {
-                generateParam = standardGenerateParam;
-            }
-            sliderCaptchaInfo = captchaTemplate.generateSlideImageInfo(generateParam);
+        if (sliderCaptchaInfo == null) {
+            sliderCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(param);
         }
         return sliderCaptchaInfo;
     }

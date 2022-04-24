@@ -4,10 +4,11 @@ import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.exception.CaptchaValidException;
 import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.template.slider.common.exception.SliderCaptchaException;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
@@ -27,12 +28,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication {
 
-    private SliderCaptchaGenerator template;
+    private ImageCaptchaGenerator template;
     private SliderCaptchaValidator sliderCaptchaValidator;
     private SliderCaptchaProperties prop;
     private CacheStore cacheStore;
 
-    public DefaultSliderCaptchaApplication(SliderCaptchaGenerator template,
+    public DefaultSliderCaptchaApplication(ImageCaptchaGenerator template,
                                            SliderCaptchaValidator sliderCaptchaValidator,
                                            CacheStore cacheStore,
                                            SliderCaptchaProperties prop) {
@@ -45,12 +46,17 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha() {
         // 生成滑块验证码
-        return afterGenerateSliderCaptcha(getSliderCaptchaTemplate().generateSlideImageInfo());
+        return generateSliderCaptcha(CaptchaTypeConstant.SLIDER);
+    }
+
+    @Override
+    public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(String type) {
+        return afterGenerateSliderCaptcha(getSliderCaptchaTemplate().generateCaptchaImage(type));
     }
 
     @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(GenerateParam param) {
-        SliderCaptchaInfo slideImageInfo = getSliderCaptchaTemplate().generateSlideImageInfo(param);
+        ImageCaptchaInfo slideImageInfo = getSliderCaptchaTemplate().generateCaptchaImage(param);
         return afterGenerateSliderCaptcha(slideImageInfo);
     }
 
@@ -69,7 +75,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
 
-    public CaptchaResponse<SliderCaptchaVO> afterGenerateSliderCaptcha(SliderCaptchaInfo slideImageInfo) {
+    public CaptchaResponse<SliderCaptchaVO> afterGenerateSliderCaptcha(ImageCaptchaInfo slideImageInfo) {
         if (slideImageInfo == null) {
             // 要是生成失败
             throw new SliderCaptchaException("生成滑块验证码失败，验证码生成为空");
@@ -126,8 +132,8 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public SliderCaptchaResourceManager getSliderCaptchaResourceManager() {
-        return getSliderCaptchaTemplate().getSlideImageResourceManager();
+    public ImageCaptchaResourceManager getImageCaptchaResourceManager() {
+        return getSliderCaptchaTemplate().getImageResourceManager();
     }
 
     @Override
@@ -136,7 +142,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public void setSliderCaptchaTemplate(SliderCaptchaGenerator sliderCaptchaTemplate) {
+    public void setSliderCaptchaTemplate(ImageCaptchaGenerator sliderCaptchaTemplate) {
         this.template = sliderCaptchaTemplate;
     }
 
@@ -151,7 +157,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public SliderCaptchaGenerator getSliderCaptchaTemplate() {
+    public ImageCaptchaGenerator getSliderCaptchaTemplate() {
         return this.template;
     }
 

@@ -1,9 +1,9 @@
 package cloud.tianai.captcha.slider;
 
 import cloud.tianai.captcha.slider.store.CacheStore;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
@@ -29,6 +29,11 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
+    public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(String type) {
+        return target.generateSliderCaptcha(type);
+    }
+
+    @Override
     public CaptchaResponse<SliderCaptchaVO> generateSliderCaptcha(CaptchaImageType captchaImageType) {
         return target.generateSliderCaptcha(captchaImageType);
     }
@@ -44,8 +49,8 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
-    public SliderCaptchaResourceManager getSliderCaptchaResourceManager() {
-        return target.getSliderCaptchaResourceManager();
+    public ImageCaptchaResourceManager getImageCaptchaResourceManager() {
+        return target.getImageCaptchaResourceManager();
     }
 
     @Override
@@ -54,7 +59,7 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
-    public void setSliderCaptchaTemplate(SliderCaptchaGenerator sliderCaptchaTemplate) {
+    public void setSliderCaptchaTemplate(ImageCaptchaGenerator sliderCaptchaTemplate) {
         target.setSliderCaptchaTemplate(sliderCaptchaTemplate);
     }
 
@@ -69,7 +74,7 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
-    public SliderCaptchaGenerator getSliderCaptchaTemplate() {
+    public ImageCaptchaGenerator getSliderCaptchaTemplate() {
         return target.getSliderCaptchaTemplate();
     }
 
