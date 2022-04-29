@@ -3,13 +3,13 @@ package cloud.tianai.captcha.slider;
 import cloud.tianai.captcha.autoconfiguration.SliderCaptchaProperties;
 import cloud.tianai.captcha.exception.CaptchaValidException;
 import cloud.tianai.captcha.slider.store.CacheStore;
+import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.common.exception.SliderCaptchaException;
 import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
@@ -29,17 +29,17 @@ import java.util.concurrent.TimeUnit;
 public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication {
 
     private ImageCaptchaGenerator template;
-    private SliderCaptchaValidator sliderCaptchaValidator;
+    private ImageCaptchaValidator imageCaptchaValidator;
     private SliderCaptchaProperties prop;
     private CacheStore cacheStore;
 
     public DefaultSliderCaptchaApplication(ImageCaptchaGenerator template,
-                                           SliderCaptchaValidator sliderCaptchaValidator,
+                                           ImageCaptchaValidator imageCaptchaValidator,
                                            CacheStore cacheStore,
                                            SliderCaptchaProperties prop) {
         this.prop = prop;
         setSliderCaptchaTemplate(template);
-        setSliderCaptchaValidator(sliderCaptchaValidator);
+        setImageCaptchaValidator(imageCaptchaValidator);
         setCacheStore(cacheStore);
     }
 
@@ -83,10 +83,17 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
         // 生成ID
         String id = generatorId();
         // 生成校验数据
-        Map<String, Object> validData = getSliderCaptchaValidator().generateSliderCaptchaValidData(slideImageInfo);
+        Map<String, Object> validData = getImageCaptchaValidator().generateImageCaptchaValidData(slideImageInfo);
         // 存到缓存里
         cacheVerification(id, validData);
-        SliderCaptchaVO verificationVO = new SliderCaptchaVO(slideImageInfo.getBackgroundImage(), slideImageInfo.getSliderImage());
+        SliderCaptchaVO verificationVO = new SliderCaptchaVO();
+        verificationVO.setBackgroundImage(slideImageInfo.getBackgroundImage());
+        verificationVO.setSliderImage(slideImageInfo.getSliderImage());
+        verificationVO.setBackgroundImageWidth(slideImageInfo.getBgImageWidth());
+        verificationVO.setBackgroundImageHeight(slideImageInfo.getBgImageHeight());
+        verificationVO.setSliderImageWidth(slideImageInfo.getSliderImageWidth());
+        verificationVO.setSliderImageHeight(slideImageInfo.getSliderImageHeight());
+        verificationVO.setData(slideImageInfo.getData());
         return CaptchaResponse.of(id, verificationVO);
     }
 
@@ -96,7 +103,7 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
         if (cachePercentage == null) {
             return false;
         }
-        return getSliderCaptchaValidator().valid(sliderCaptchaTrack, cachePercentage);
+        return getImageCaptchaValidator().valid(sliderCaptchaTrack, cachePercentage);
     }
 
 
@@ -137,8 +144,8 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public void setSliderCaptchaValidator(SliderCaptchaValidator sliderCaptchaValidator) {
-        this.sliderCaptchaValidator = sliderCaptchaValidator;
+    public void setImageCaptchaValidator(ImageCaptchaValidator imageCaptchaValidator) {
+        this.imageCaptchaValidator = imageCaptchaValidator;
     }
 
     @Override
@@ -152,8 +159,8 @@ public class DefaultSliderCaptchaApplication implements SliderCaptchaApplication
     }
 
     @Override
-    public SliderCaptchaValidator getSliderCaptchaValidator() {
-        return this.sliderCaptchaValidator;
+    public ImageCaptchaValidator getImageCaptchaValidator() {
+        return this.imageCaptchaValidator;
     }
 
     @Override

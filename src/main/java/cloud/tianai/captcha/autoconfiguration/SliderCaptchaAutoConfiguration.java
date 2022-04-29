@@ -15,7 +15,7 @@ import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
 import cloud.tianai.captcha.template.slider.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.impl.DefaultResourceStore;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.impl.BasicCaptchaTrackValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -63,7 +63,7 @@ public class SliderCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SliderCaptchaValidator sliderCaptchaValidator() {
+    public ImageCaptchaValidator sliderCaptchaValidator() {
         return new BasicCaptchaTrackValidator();
     }
 
@@ -92,10 +92,10 @@ public class SliderCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SliderCaptchaApplication sliderCaptchaApplication(ImageCaptchaGenerator captchaGenerator,
-                                                             SliderCaptchaValidator sliderCaptchaValidator,
+                                                             ImageCaptchaValidator imageCaptchaValidator,
                                                              CacheStore cacheStore,
                                                              SliderCaptchaProperties prop) {
-        SliderCaptchaApplication target = new DefaultSliderCaptchaApplication(captchaGenerator, sliderCaptchaValidator, cacheStore, prop);
+        SliderCaptchaApplication target = new DefaultSliderCaptchaApplication(captchaGenerator, imageCaptchaValidator, cacheStore, prop);
         if (prop.getSecondary() != null && Boolean.TRUE.equals(prop.getSecondary().getEnabled())) {
             target = new SecondaryVerificationApplication(target, prop.getSecondary());
         }

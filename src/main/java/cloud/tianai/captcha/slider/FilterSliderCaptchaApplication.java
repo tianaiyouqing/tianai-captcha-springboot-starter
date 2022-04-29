@@ -4,7 +4,7 @@ import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
@@ -54,8 +54,8 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
-    public void setSliderCaptchaValidator(SliderCaptchaValidator sliderCaptchaValidator) {
-        target.setSliderCaptchaValidator(sliderCaptchaValidator);
+    public void setImageCaptchaValidator(ImageCaptchaValidator sliderCaptchaValidator) {
+        target.setImageCaptchaValidator(sliderCaptchaValidator);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class FilterSliderCaptchaApplication implements SliderCaptchaApplication 
     }
 
     @Override
-    public SliderCaptchaValidator getSliderCaptchaValidator() {
-        return target.getSliderCaptchaValidator();
+    public ImageCaptchaValidator getImageCaptchaValidator() {
+        return target.getImageCaptchaValidator();
     }
 
     @Override

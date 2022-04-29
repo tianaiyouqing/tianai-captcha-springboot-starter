@@ -5,7 +5,7 @@ import cloud.tianai.captcha.slider.store.CacheStore;
 import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import cloud.tianai.captcha.vo.CaptchaResponse;
 import cloud.tianai.captcha.vo.SliderCaptchaVO;
@@ -66,9 +66,9 @@ public interface SliderCaptchaApplication {
     /**
      * 设置 SliderCaptchaValidator 验证码验证器
      *
-     * @param sliderCaptchaValidator sliderCaptchaValidator
+     * @param imageCaptchaValidator imageCaptchaValidator
      */
-    void setSliderCaptchaValidator(SliderCaptchaValidator sliderCaptchaValidator);
+    void setImageCaptchaValidator(ImageCaptchaValidator imageCaptchaValidator);
 
     /**
      * 设置 SliderCaptchaGenerator 验证码生成器
@@ -89,7 +89,7 @@ public interface SliderCaptchaApplication {
      *
      * @return SliderCaptchaValidator
      */
-    SliderCaptchaValidator getSliderCaptchaValidator();
+    ImageCaptchaValidator getImageCaptchaValidator();
 
     /**
      * 获取验证码生成器

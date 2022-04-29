@@ -137,7 +137,7 @@ public class DynamicSliderCaptchaGenerator implements ImageCaptchaGenerator, App
     public ImageCaptchaInfo requiredGetSliderCaptchaInfo(GenerateParam param) {
         ImageCaptchaInfo sliderCaptchaInfo = null;
         if (cacheImageCaptchaGenerator != null) {
-            sliderCaptchaInfo = cacheImageCaptchaGenerator.generateCaptchaImage(param, false);
+            sliderCaptchaInfo = cacheImageCaptchaGenerator.generateCaptchaImage(param, true);
         }
         if (sliderCaptchaInfo == null) {
             sliderCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(param);
