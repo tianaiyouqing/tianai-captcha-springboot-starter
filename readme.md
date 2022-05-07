@@ -82,11 +82,11 @@ public class Test {
 ```yaml
 # 滑块验证码配置， 详细请看 cloud.tianai.captcha.autoconfiguration.ImageCaptchaProperties 类
 captcha:
-    # 如果项目中使用到了redis，滑块验证码会自动把验证码数据存到redis中， 这里配置redis的key的前缀,默认是captcha:slider
+  # 如果项目中使用到了redis，滑块验证码会自动把验证码数据存到redis中， 这里配置redis的key的前缀,默认是captcha:slider
   prefix: captcha
-    # 验证码过期时间，默认是1分钟,单位毫秒， 可以根据自身业务进行调整
+  # 验证码过期时间，默认是2分钟,单位毫秒， 可以根据自身业务进行调整
   expire: 
-    # 默认缓存时间 1分钟
+    # 默认缓存时间 2分钟
     default: 10000
     # 针对 点选验证码 过期时间设置为 2分钟， 因为点选验证码验证比较慢，把过期时间调整大一些
     WORD_IMAGE_CLICK: 20000
