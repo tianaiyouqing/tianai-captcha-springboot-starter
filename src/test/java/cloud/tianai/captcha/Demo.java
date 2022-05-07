@@ -1,6 +1,6 @@
 package cloud.tianai.captcha;
 
-import cloud.tianai.captcha.cache.ConCurrentExpiringMap;
+import cloud.tianai.captcha.spring.cache.ConCurrentExpiringMap;
 import org.springframework.util.StopWatch;
 
 import java.util.concurrent.TimeUnit;
