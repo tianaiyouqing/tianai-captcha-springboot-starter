@@ -117,7 +117,7 @@ public class DynamicImageCaptchaGenerator implements ImageCaptchaGenerator, Appl
 
     @Override
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
-        return imageCaptchaGenerator.generateCaptchaImage(param);
+        return requiredGetSliderCaptchaInfo(param);
     }
 
 
