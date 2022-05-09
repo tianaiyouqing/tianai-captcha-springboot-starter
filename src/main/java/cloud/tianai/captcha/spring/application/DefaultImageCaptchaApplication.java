@@ -62,9 +62,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     @Override
     public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type) {
-        GenerateParam generateParam = new GenerateParam();
-        generateParam.setType(type);
-        return generateCaptcha(generateParam);
+        ImageCaptchaInfo slideImageInfo = getImageCaptchaTemplate().generateCaptchaImage(type);
+        return afterGenerateSliderCaptcha(slideImageInfo);
     }
 
     @Override
