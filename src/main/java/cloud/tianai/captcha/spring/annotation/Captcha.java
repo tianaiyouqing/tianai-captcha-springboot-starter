@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Captcha {
 
     @AliasFor("type")
-    String value();
+    String value() default CaptchaTypeConstant.SLIDER;
 
     @AliasFor("value")
     String type() default CaptchaTypeConstant.SLIDER;
