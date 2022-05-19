@@ -1,22 +1,25 @@
 package cloud.tianai.captcha.spring.autoconfiguration;
 
 
-import cloud.tianai.captcha.spring.aop.CaptchaAdvisor;
-import cloud.tianai.captcha.spring.aop.CaptchaInterceptor;
-import cloud.tianai.captcha.spring.plugins.DynamicImageCaptchaGenerator;
-import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
-import cloud.tianai.captcha.spring.application.DefaultImageCaptchaApplication;
-import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
-import cloud.tianai.captcha.spring.store.CacheStore;
-import cloud.tianai.captcha.spring.store.impl.LocalCacheStore;
-import cloud.tianai.captcha.spring.store.impl.RedisCacheStore;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultResourceStore;
+import cloud.tianai.captcha.spring.aop.CaptchaAdvisor;
+import cloud.tianai.captcha.spring.aop.CaptchaInterceptor;
+import cloud.tianai.captcha.spring.application.DefaultImageCaptchaApplication;
+import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.spring.plugins.SpringMultiImageCaptchaGenerator;
+import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
+import cloud.tianai.captcha.spring.store.CacheStore;
+import cloud.tianai.captcha.spring.store.impl.LocalCacheStore;
+import cloud.tianai.captcha.spring.store.impl.RedisCacheStore;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -56,9 +59,17 @@ public class ImageCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ImageCaptchaGenerator imageCaptchaTemplate(ImageCaptchaProperties prop,
-                                                      ImageCaptchaResourceManager captchaResourceManager) {
-        // 增加缓存处理
-        return new DynamicImageCaptchaGenerator(prop, captchaResourceManager);
+                                                      ImageCaptchaResourceManager captchaResourceManager, BeanFactory beanFactory) {
+        // 构建多验证码生成器
+        ImageCaptchaGenerator captchaGenerator = new SpringMultiImageCaptchaGenerator(captchaResourceManager, beanFactory);
+        SliderCaptchaCacheProperties cache = prop.getCache();
+        if (Boolean.TRUE.equals(cache.getEnabled()) && cache.getCacheSize() > 0) {
+            // 增加缓存处理
+            captchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator, cache.getCacheSize(), cache.getWaitTime(), cache.getPeriod());
+        }
+        // 初始化
+        captchaGenerator.init(prop.getInitDefaultResource());
+        return captchaGenerator;
     }
 
     @Bean
