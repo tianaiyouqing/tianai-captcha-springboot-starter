@@ -11,7 +11,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.3.1</version>
+    <version>1.3.2</version>
 </dependency>
 ```
 
@@ -159,4 +159,3 @@ public class Demo {
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
 
 ## qq群: 1021884609
- 
