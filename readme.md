@@ -18,11 +18,17 @@
 - 注解版风格
 
 ```java
-import Captcha;
+package cloud.tianai.captcha.readme;
+
+import cloud.tianai.captcha.spring.annotation.Captcha;
 import cloud.tianai.captcha.spring.request.CaptchaRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
+@RestController
 public class Test {
     // 只需要在需要验证的controller层加入 @Captcha 注解，
     // 并且接受的参数指定成CaptchaRequest即可自动进行校验
@@ -30,25 +36,30 @@ public class Test {
     // 如果校验失败，会抛出CaptchaValidException异常
     // 对校验失败的处理，可以使用sping的全局异常拦截CaptchaValidException异常进行处理
 
-    @Captcha
+    @Captcha("SLIDER")
     @PostMapping("/login")
-    public ApiResponse login(@RequestBody CaptchaRequest<LoginForm> request) {
+    public String login(@RequestBody CaptchaRequest<Map> request) {
         // 进入这个方法就说明已经校验成功了
+        return "success";
     }
 }
+
 ```
 
 - 编码式风格
 
 ```java
+package cloud.tianai.captcha.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.spring.application.CaptchaImageType;
 import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.vo.CaptchaResponse;
 import cloud.tianai.captcha.spring.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class Test {
+public class Test2 {
     @Autowired
     private ImageCaptchaApplication application;
 
@@ -58,10 +69,11 @@ public class Test {
         // 来通过参数选择返回哪种类型的图片
         CaptchaResponse<ImageCaptchaVO> res1 = application.generateCaptcha(CaptchaTypeConstant.SLIDER);
 
-        // 也可以用编码判断返回哪种类型的图片, 返回webp类型的图片
-        res1 = application.generateCaptcha(CaptchaTypeConstant.SLIDER, CaptchaImageType.WEBP);
+        // 也可以用编码判断返回哪种类型的图片, 返回的图片,
         // 返回 底图是jpeg，滑块部分是png类型的图片
-        res1 = application.generateSliderCaptcha(CaptchaImageType.JPEG_PNG);
+        res1 = application.generateCaptcha(CaptchaImageType.JPEG_PNG);
+        // *** 注意，要生成webp类型的图片时需要手动将webp的扩展导入到系统中 ，参考: https://bitbucket.org/luciad/webp-imageio
+        // res1 = application.generateCaptcha(CaptchaTypeConstant.SLIDER, CaptchaImageType.WEBP);
         // 其它扩展方法可以自己在源码中查看,都有详细注释
 
         // 匹配验证码是否正确
@@ -71,6 +83,7 @@ public class Test {
     }
 
 }
+
 ```
 
 - 前端展示效果
@@ -120,12 +133,9 @@ captcha:
 - 滑块应用程序(`ImageCaptchaApplication`) ，上面一些接口的组合和增强，比如负责把验证的数据存到缓存中，用户一般直接使用这个接口方便的生成滑块图片和校验数据
 
 ## 基于 tianai-captcha 的一些默认扩展
-- `DynamicSliderCaptchaGenerator` 动态滑块验证码生成器
-  - 基于 `ImageCaptchaGenerator`进行扩展
-  - 可以通过url或者header中传入 属性名为 `captcha-type` 属性值为 `webp`或者`jpeg-png` 来指定生成哪种类型的图片格式
-  - 如果不指定 默认会通过header 判断如果是谷歌浏览器 默认返回 `webp`格式的图片，
-  - 该扩展已经启动时默认装配，
-  - 如果不想用该功能可以手动把 `MultiImageCaptchaGenerator`或者`CacheImageCaptchaGenerator` 或者自定义实现注入到spring中进行替换
+- `SpringMultiImageCaptchaGenerator` 基于Spring的多验证码生成器
+  - 基于 `MultiImageCaptchaGenerator`进行扩展
+  - 可以通过手动实现`ImageCaptchaGeneratorProvider` 然后注入到spring中实现自定义验证码扩展，也可以通过该方法替换掉默认的实现
 
 - `SecondaryVerificationApplication` 二次验证扩展
   - 基于 `ImageCaptchaApplication`进行扩展 实现了二次验证功能， 
@@ -134,11 +144,16 @@ captcha:
   - 使用例子
 
 ```java
+package cloud.tianai.captcha.readme;
+
 import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-public class Demo {
+public class Test3 {
     @Autowired
     private ImageCaptchaApplication sca;
 
@@ -146,12 +161,13 @@ public class Demo {
     @ResponseBody
     public boolean check2Captcha(@RequestParam("id") String id) {
         // 如果开启了二次验证
-        if (sliderCaptchaApplication instanceof SecondaryVerificationApplication) {
-            return ((SecondaryVerificationApplication) sliderCaptchaApplication).secondaryVerification(id);
+        if (sca instanceof SecondaryVerificationApplication) {
+            return ((SecondaryVerificationApplication) sca).secondaryVerification(id);
         }
         return false;
     }
 }
+
 ```
 ## 其它
 - 该自动装配器可以自动选择redis做缓存还是缓存到本地，自动进行识别装配
