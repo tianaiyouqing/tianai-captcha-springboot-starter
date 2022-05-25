@@ -63,7 +63,7 @@ public class ImageCaptchaAutoConfiguration {
         // 构建多验证码生成器
         ImageCaptchaGenerator captchaGenerator = new SpringMultiImageCaptchaGenerator(captchaResourceManager, beanFactory);
         SliderCaptchaCacheProperties cache = prop.getCache();
-        if (Boolean.TRUE.equals(cache.getEnabled()) && cache.getCacheSize() > 0) {
+        if (cache != null && Boolean.TRUE.equals(cache.getEnabled()) && cache.getCacheSize() > 0) {
             // 增加缓存处理
             captchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator, cache.getCacheSize(), cache.getWaitTime(), cache.getPeriod());
         }
