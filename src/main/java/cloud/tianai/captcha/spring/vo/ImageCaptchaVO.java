@@ -10,14 +10,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageCaptchaVO implements Serializable {
-    /**
-     * 背景图
-     */
+    /** 背景图.*/
     private String backgroundImage;
 
-    /**
-     * 移动图
-     */
+    /** 移动图.*/
     private String sliderImage;
     /** 背景图片宽度.*/
     private Integer backgroundImageWidth;
@@ -27,8 +23,6 @@ public class ImageCaptchaVO implements Serializable {
     private Integer sliderImageWidth;
     /** 滑动图片高度.*/
     private Integer sliderImageHeight;
-    /**
-     * data
-     */
+    /** data 扩展数据.*/
     private Object data;
 }

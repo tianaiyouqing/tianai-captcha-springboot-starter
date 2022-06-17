@@ -68,6 +68,16 @@ public interface ImageCaptchaApplication {
     boolean matching(String id, ImageCaptchaTrack imageCaptchaTrack);
 
     /**
+     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, ImageCaptchaTrack)}
+     * @param id id
+     * @param percentage 百分比数据
+     * @return boolean
+     *
+     */
+    @Deprecated
+    boolean matching(String id, Float percentage);
+
+    /**
      * 获取验证码资源管理器
      *
      * @return SliderCaptchaResourceManager

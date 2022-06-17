@@ -13,6 +13,7 @@ import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.spring.vo.CaptchaResponse;
 import cloud.tianai.captcha.spring.vo.ImageCaptchaVO;
+import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -123,6 +124,22 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         return getImageCaptchaValidator().valid(imageCaptchaTrack, cachePercentage);
     }
 
+    @Override
+    public boolean matching(String id, Float percentage) {
+        Map<String, Object> cachePercentage = getVerification(id);
+        if (cachePercentage == null) {
+            return false;
+        }
+        ImageCaptchaValidator imageCaptchaValidator = getImageCaptchaValidator();
+        if (!(imageCaptchaValidator instanceof SimpleImageCaptchaValidator)) {
+            return false;
+        }
+        SimpleImageCaptchaValidator simpleImageCaptchaValidator = (SimpleImageCaptchaValidator)imageCaptchaValidator;
+        Float oriPercentage = simpleImageCaptchaValidator.getFloatParam(SimpleImageCaptchaValidator.PERCENTAGE_KEY, cachePercentage);
+        // 读容错值
+        Float tolerant = simpleImageCaptchaValidator.getFloatParam(SimpleImageCaptchaValidator.TOLERANT_KEY, cachePercentage, simpleImageCaptchaValidator.getDefaultTolerant());
+        return simpleImageCaptchaValidator.checkPercentage(percentage, oriPercentage, tolerant);
+    }
 
     protected String generatorId() {
         return UUID.randomUUID().toString().replace("-", "");
