@@ -54,6 +54,11 @@ public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
+    public boolean matching(String id, Float percentage) {
+        return target.matching(id, percentage);
+    }
+
+    @Override
     public ImageCaptchaResourceManager getImageCaptchaResourceManager() {
         return target.getImageCaptchaResourceManager();
     }
