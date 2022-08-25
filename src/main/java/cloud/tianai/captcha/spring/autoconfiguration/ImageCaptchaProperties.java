@@ -20,7 +20,7 @@ public class ImageCaptchaProperties {
     /** 过期时间. */
     private Map<String, Long> expire = Collections.emptyMap();
     /** 是否初始化默认资源. */
-    private Boolean initDefaultResource = true;
+    private Boolean initDefaultResource = false;
     /** 二次验证配置. */
     @NestedConfigurationProperty
     private SecondaryVerificationProperties secondary;

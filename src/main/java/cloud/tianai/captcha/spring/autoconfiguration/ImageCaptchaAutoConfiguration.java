@@ -2,8 +2,9 @@ package cloud.tianai.captcha.spring.autoconfiguration;
 
 
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
@@ -58,10 +59,19 @@ public class ImageCaptchaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ImageTransform imageTransform() {
+        return new Base64ImageTransform();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
     public ImageCaptchaGenerator imageCaptchaTemplate(ImageCaptchaProperties prop,
-                                                      ImageCaptchaResourceManager captchaResourceManager, BeanFactory beanFactory) {
+                                                      ImageCaptchaResourceManager captchaResourceManager,
+                                                      ImageTransform imageTransform,
+                                                      BeanFactory beanFactory) {
         // 构建多验证码生成器
-        ImageCaptchaGenerator captchaGenerator = new SpringMultiImageCaptchaGenerator(captchaResourceManager, beanFactory);
+        ImageCaptchaGenerator captchaGenerator = new SpringMultiImageCaptchaGenerator(captchaResourceManager, imageTransform, beanFactory);
         SliderCaptchaCacheProperties cache = prop.getCache();
         if (cache != null && Boolean.TRUE.equals(cache.getEnabled()) && cache.getCacheSize() > 0) {
             // 增加缓存处理

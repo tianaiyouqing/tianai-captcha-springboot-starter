@@ -1,9 +1,9 @@
 package cloud.tianai.captcha.spring.plugins;
 
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.spring.autoconfiguration.ImageCaptchaProperties;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -16,9 +16,9 @@ import org.springframework.beans.factory.ListableBeanFactory;
 public class SpringMultiImageCaptchaGenerator extends MultiImageCaptchaGenerator {
     private ListableBeanFactory beanFactory;
 
-    public SpringMultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
+    public SpringMultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform,
                                             BeanFactory beanFactory) {
-        super(imageCaptchaResourceManager);
+        super(imageCaptchaResourceManager, imageTransform);
         this.beanFactory = (ListableBeanFactory) beanFactory;
     }
 
