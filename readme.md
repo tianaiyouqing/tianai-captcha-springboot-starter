@@ -11,7 +11,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
 </dependency>
 ```
 
@@ -103,7 +103,7 @@ captcha:
     default: 10000
     # 针对 点选验证码 过期时间设置为 2分钟， 因为点选验证码验证比较慢，把过期时间调整大一些
     WORD_IMAGE_CLICK: 20000
-  # 使用加载系统自带的资源， 默认是true
+  # 使用加载系统自带的资源， 默认是 false
   init-default-resource: false
   cache:
     # 缓存控制， 默认为false不开启
