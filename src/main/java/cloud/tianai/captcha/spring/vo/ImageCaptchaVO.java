@@ -12,13 +12,12 @@ import java.io.Serializable;
 public class ImageCaptchaVO implements Serializable {
     /** 背景图.*/
     private String backgroundImage;
-
     /** 移动图.*/
     private String sliderImage;
     /** 背景图片宽度.*/
-    private Integer backgroundImageWidth;
+    private Integer bgImageWidth;
     /** 背景图片高度.*/
-    private Integer backgroundImageHeight;
+    private Integer bgImageHeight;
     /** 滑动图片宽度.*/
     private Integer sliderImageWidth;
     /** 滑动图片高度.*/
