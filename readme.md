@@ -88,8 +88,8 @@ public class Test2 {
 
 - 前端展示效果
 
-![](image/1.png)
-![](image/2.png)
+![](https://minio.tianai.cloud/public/1.png)
+![](https://minio.tianai.cloud/public/2.png)
 ## springboot配置文件说明
 
 ```yaml
@@ -175,3 +175,4 @@ public class Test3 {
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
 
 ## qq群: 1021884609
+## 微信群: ![](https://minio.tianai.cloud/public/qun2.jpg)
