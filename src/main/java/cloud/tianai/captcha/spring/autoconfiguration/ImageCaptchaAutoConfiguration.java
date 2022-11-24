@@ -16,24 +16,17 @@ import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.SpringMultiImageCaptchaGenerator;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import cloud.tianai.captcha.spring.store.CacheStore;
-import cloud.tianai.captcha.spring.store.impl.LocalCacheStore;
-import cloud.tianai.captcha.spring.store.impl.RedisCacheStore;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
  * @Author: 天爱有情
@@ -42,6 +35,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 @Order
 @Configuration
+@AutoConfigureAfter(CacheStoreAutoConfiguration.class)
 @EnableConfigurationProperties({ImageCaptchaProperties.class})
 public class ImageCaptchaAutoConfiguration {
 
@@ -121,43 +115,6 @@ public class ImageCaptchaAutoConfiguration {
             target = new SecondaryVerificationApplication(target, prop.getSecondary());
         }
         return target;
-    }
-
-    /**
-     * @Author: 天爱有情
-     * @date 2020/10/27 14:06
-     * @Description RedisCacheSliderCaptchaApplication
-     */
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(StringRedisTemplate.class)
-    @Import({RedisAutoConfiguration.class})
-    @AutoConfigureAfter({RedisAutoConfiguration.class})
-    public static class RedisCacheStoreConfiguration {
-
-        @Bean
-        @ConditionalOnBean(StringRedisTemplate.class)
-        @ConditionalOnMissingBean(CacheStore.class)
-        public CacheStore redis(StringRedisTemplate redisTemplate) {
-            return new RedisCacheStore(redisTemplate);
-        }
-    }
-
-    /**
-     * @Author: 天爱有情
-     * @date 2020/10/27 14:06
-     * @Description LocalCacheSliderCaptchaApplication
-     */
-
-    @Configuration(proxyBeanMethods = false)
-    @AutoConfigureAfter({RedisCacheStoreConfiguration.class})
-    @Import({RedisCacheStoreConfiguration.class})
-    public static class LocalCacheStoreConfiguration {
-
-        @Bean
-        @ConditionalOnMissingBean(CacheStore.class)
-        public CacheStore local() {
-            return new LocalCacheStore();
-        }
     }
 
 }
