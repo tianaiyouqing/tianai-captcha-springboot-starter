@@ -10,6 +10,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageCaptchaVO implements Serializable {
+    /** 验证码类型.*/
+    private String type;
     /** 背景图.*/
     private String backgroundImage;
     /** 移动图.*/

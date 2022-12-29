@@ -105,6 +105,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         // 存到缓存里
         cacheVerification(id, slideImageInfo.getType(), validData);
         ImageCaptchaVO verificationVO = new ImageCaptchaVO();
+        verificationVO.setType(slideImageInfo.getType());
         verificationVO.setBackgroundImage(slideImageInfo.getBackgroundImage());
         verificationVO.setSliderImage(slideImageInfo.getSliderImage());
         verificationVO.setBgImageWidth(slideImageInfo.getBgImageWidth());
