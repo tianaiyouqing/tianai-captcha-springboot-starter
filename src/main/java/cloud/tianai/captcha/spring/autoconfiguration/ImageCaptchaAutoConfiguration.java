@@ -14,10 +14,14 @@ import cloud.tianai.captcha.spring.aop.CaptchaInterceptor;
 import cloud.tianai.captcha.spring.application.DefaultImageCaptchaApplication;
 import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.plugins.SpringMultiImageCaptchaGenerator;
+import cloud.tianai.captcha.spring.plugins.chain.validators.DifferenceChainValidator;
 import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
+import cloud.tianai.captcha.validator.impl.chain.ChainImageCaptchaValidator;
+import cloud.tianai.captcha.validator.impl.chain.validators.LRChainValidator;
+import cloud.tianai.captcha.validator.impl.chain.validators.ParamCheckChainValidator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -79,7 +83,11 @@ public class ImageCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ImageCaptchaValidator imageCaptchaValidator() {
-        return new BasicCaptchaTrackValidator();
+        // 默认使用 LR 校验
+        ChainImageCaptchaValidator imageCaptchaValidator = new ChainImageCaptchaValidator();
+        imageCaptchaValidator.addValidator(new ParamCheckChainValidator());
+        imageCaptchaValidator.addValidator(new LRChainValidator());
+        return imageCaptchaValidator;
     }
 
     @Bean

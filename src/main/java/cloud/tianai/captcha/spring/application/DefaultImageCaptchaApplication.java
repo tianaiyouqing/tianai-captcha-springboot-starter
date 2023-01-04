@@ -83,10 +83,10 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         GenerateParam param = new GenerateParam();
         if (CaptchaImageType.WEBP.equals(captchaImageType)) {
             param.setBackgroundFormatName("webp");
-            param.setSliderFormatName("webp");
+            param.setTemplateFormatName("webp");
         } else {
             param.setBackgroundFormatName("jpeg");
-            param.setSliderFormatName("png");
+            param.setTemplateFormatName("png");
         }
         param.setType(type);
         return generateCaptcha(param);
@@ -107,11 +107,11 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         ImageCaptchaVO verificationVO = new ImageCaptchaVO();
         verificationVO.setType(slideImageInfo.getType());
         verificationVO.setBackgroundImage(slideImageInfo.getBackgroundImage());
-        verificationVO.setSliderImage(slideImageInfo.getSliderImage());
-        verificationVO.setBgImageWidth(slideImageInfo.getBgImageWidth());
-        verificationVO.setBgImageHeight(slideImageInfo.getBgImageHeight());
-        verificationVO.setSliderImageWidth(slideImageInfo.getSliderImageWidth());
-        verificationVO.setSliderImageHeight(slideImageInfo.getSliderImageHeight());
+        verificationVO.setTemplateImage(slideImageInfo.getTemplateImage());
+        verificationVO.setBackgroundImageWidth(slideImageInfo.getBackgroundImageWidth());
+        verificationVO.setBackgroundImageHeight(slideImageInfo.getBackgroundImageHeight());
+        verificationVO.setTemplateImageWidth(slideImageInfo.getTemplateImageWidth());
+        verificationVO.setTemplateImageHeight(slideImageInfo.getTemplateImageHeight());
         verificationVO.setData(slideImageInfo.getData());
         return CaptchaResponse.of(id, verificationVO);
     }

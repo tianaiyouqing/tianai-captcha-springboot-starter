@@ -15,15 +15,15 @@ public class ImageCaptchaVO implements Serializable {
     /** 背景图.*/
     private String backgroundImage;
     /** 移动图.*/
-    private String sliderImage;
+    private String templateImage;
     /** 背景图片宽度.*/
-    private Integer bgImageWidth;
+    private Integer backgroundImageWidth;
     /** 背景图片高度.*/
-    private Integer bgImageHeight;
+    private Integer backgroundImageHeight;
     /** 滑动图片宽度.*/
-    private Integer sliderImageWidth;
+    private Integer templateImageWidth;
     /** 滑动图片高度.*/
-    private Integer sliderImageHeight;
+    private Integer templateImageHeight;
     /** data 扩展数据.*/
     private Object data;
 }
