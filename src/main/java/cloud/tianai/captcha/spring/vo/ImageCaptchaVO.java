@@ -16,6 +16,10 @@ public class ImageCaptchaVO implements Serializable {
     private String backgroundImage;
     /** 移动图.*/
     private String templateImage;
+    /** 背景图片所属标签. */
+    private String backgroundImageTag;
+    /** 模板图片所属标签. */
+    private String templateImageTag;
     /** 背景图片宽度.*/
     private Integer backgroundImageWidth;
     /** 背景图片高度.*/

@@ -108,6 +108,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         verificationVO.setType(slideImageInfo.getType());
         verificationVO.setBackgroundImage(slideImageInfo.getBackgroundImage());
         verificationVO.setTemplateImage(slideImageInfo.getTemplateImage());
+        verificationVO.setBackgroundImageTag(slideImageInfo.getBackgroundImageTag());
+        verificationVO.setTemplateImageTag(slideImageInfo.getTemplateImageTag());
         verificationVO.setBackgroundImageWidth(slideImageInfo.getBackgroundImageWidth());
         verificationVO.setBackgroundImageHeight(slideImageInfo.getBackgroundImageHeight());
         verificationVO.setTemplateImageWidth(slideImageInfo.getTemplateImageWidth());

@@ -17,6 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +51,7 @@ public class DifferenceChainValidator implements ChainCustomValidator {
     private Integer checkSuccessNum = 100;
 
     @Override
-    public boolean valid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> objectMap, Float tolerant, String type, ChainImageCaptchaValidator context) {
+    public boolean valid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> objectMap, Float tolerant, List<Double> features, String type, ChainImageCaptchaValidator context) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
             return true;
@@ -73,6 +74,21 @@ public class DifferenceChainValidator implements ChainCustomValidator {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码std一致[type:{}, std:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, std);
                 return false;
             }
+            Double xSameQuantityPercentage = Double.valueOf((String) cache.get("xSameQuantityPercentage"));
+            Double ySameQuantityPercentage = Double.valueOf((String) cache.get("ySameQuantityPercentage"));
+            Double tSameQuantityPercentage = Double.valueOf((String) cache.get("tSameQuantityPercentage"));
+            if (features.get(13).equals(xSameQuantityPercentage)) {
+                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码xSameQuantityPercentage一致[type:{}, xSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, xSameQuantityPercentage);
+                return false;
+            }
+            if (features.get(14).equals(ySameQuantityPercentage)) {
+                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码ySameQuantityPercentage一致[type:{}, ySameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, ySameQuantityPercentage);
+                return false;
+            }
+            if (features.get(15).equals(tSameQuantityPercentage)) {
+                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]tSameQuantityPercentage[type:{}, tSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, tSameQuantityPercentage);
+                return false;
+            }
             // 校验时间
             String preCheckTime = (String) cache.get("preCheckTime");
             if (Long.parseLong(preCheckTime) + checkTimeInterval > currentTimeMillis) {
@@ -91,6 +107,9 @@ public class DifferenceChainValidator implements ChainCustomValidator {
         // 全都存成字符串，防止某些原因导致序列化错误
         Map<String, Object> map = new HashMap<>();
         map.put("std", String.valueOf(percentageStd));
+        map.put("xSameQuantityPercentage", String.valueOf(features.get(13)));
+        map.put("ySameQuantityPercentage", String.valueOf(features.get(14)));
+        map.put("tSameQuantityPercentage", String.valueOf(features.get(15)));
         map.put("preCheckTime", String.valueOf(currentTimeMillis));
         String checkSuccessNum = (String) cache.getOrDefault("checkSuccessNum", String.valueOf(0));
         map.put("checkSuccessNum", String.valueOf(Integer.parseInt(checkSuccessNum) + 1));
