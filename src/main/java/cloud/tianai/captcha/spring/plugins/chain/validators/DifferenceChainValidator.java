@@ -3,8 +3,10 @@ package cloud.tianai.captcha.spring.plugins.chain.validators;
 import cloud.tianai.captcha.spring.common.util.IPUtils;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.util.TrackUtils;
 import cloud.tianai.captcha.validator.impl.chain.ChainCustomValidator;
 import cloud.tianai.captcha.validator.impl.chain.ChainImageCaptchaValidator;
+import cloud.tianai.captcha.validator.impl.chain.TransmitData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,10 +53,18 @@ public class DifferenceChainValidator implements ChainCustomValidator {
     private Integer checkSuccessNum = 100;
 
     @Override
-    public boolean valid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> objectMap, Float tolerant, List<Double> features, String type, ChainImageCaptchaValidator context) {
+    public boolean valid(TransmitData transmitData, ChainImageCaptchaValidator context) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
             return true;
+        }
+        Map<String, Object> objectMap = transmitData.getCaptchaValidData();
+        String type = transmitData.getType();
+        List<Double> features = transmitData.getFeatures();
+        ImageCaptchaTrack imageCaptchaTrack = transmitData.getImageCaptchaTrack();
+        if (features == null) {
+            features = TrackUtils.features(imageCaptchaTrack.getTrackList());
+            transmitData.setFeatures(features);
         }
         long currentTimeMillis = System.currentTimeMillis();
         HttpServletRequest request = requestAttributes.getRequest();
