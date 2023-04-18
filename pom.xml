@@ -27,7 +27,6 @@
     <properties>
         <java.version>1.8</java.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <tianai-captcha.version>1.4.0.1</tianai-captcha.version>
         <!-- 打包跳过单元测试 -->
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -112,8 +111,8 @@
         </dependency>
         <dependency>
             <groupId>cloud.tianai.captcha</groupId>
-            <artifactId>tianai-captcha</artifactId>
-            <version>${tianai-captcha.version}</version>
+            <artifactId>tianai-captcha-mate</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
 <!--        <dependency>-->
