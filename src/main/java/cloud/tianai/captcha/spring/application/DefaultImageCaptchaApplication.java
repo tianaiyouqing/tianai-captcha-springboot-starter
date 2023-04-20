@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.spring.application;
 
+import cloud.tianai.captcha.common.response.ApiResponse;
+import cloud.tianai.captcha.common.response.ApiResponseStatusConstant;
 import cloud.tianai.captcha.spring.autoconfiguration.ImageCaptchaProperties;
 import cloud.tianai.captcha.spring.exception.CaptchaValidException;
 import cloud.tianai.captcha.spring.store.CacheStore;
@@ -119,12 +121,12 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public boolean matching(String id, ImageCaptchaTrack imageCaptchaTrack) {
+    public ApiResponse<?> matching(String id, ImageCaptchaTrack imageCaptchaTrack) {
         Map<String, Object> cachePercentage = getVerification(id);
         if (cachePercentage == null) {
-            return false;
+            return ApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
         }
-        return getImageCaptchaValidator().valid(imageCaptchaTrack, cachePercentage);
+         return getImageCaptchaValidator().valid(imageCaptchaTrack, cachePercentage);
     }
 
     @Override

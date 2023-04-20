@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.spring.plugins.chain.validators;
 
+import cloud.tianai.captcha.common.response.ApiResponse;
+import cloud.tianai.captcha.common.response.CodeDefinition;
 import cloud.tianai.captcha.spring.common.util.IPUtils;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
@@ -33,7 +35,7 @@ import static cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator.US
 @Slf4j
 @RequiredArgsConstructor
 public class DifferenceChainValidator implements ChainCustomValidator {
-
+    public static final CodeDefinition DEFINITION = new CodeDefinition(60001, "diff check fail");
     private final CacheStore cacheStore;
 
     @Setter
@@ -53,10 +55,10 @@ public class DifferenceChainValidator implements ChainCustomValidator {
     private Integer checkSuccessNum = 100;
 
     @Override
-    public boolean valid(TransmitData transmitData, ChainImageCaptchaValidator context) {
+    public ApiResponse<?> valid(TransmitData transmitData, ChainImageCaptchaValidator context) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
-            return true;
+            return ApiResponse.ofMessage(DEFINITION);
         }
         Map<String, Object> objectMap = transmitData.getCaptchaValidData();
         String type = transmitData.getType();
@@ -82,36 +84,36 @@ public class DifferenceChainValidator implements ChainCustomValidator {
             Object std = cache.get("std");
             if (percentageStd.equals(std)) {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码std一致[type:{}, std:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, std);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
             Double xSameQuantityPercentage = Double.valueOf((String) cache.get("xSameQuantityPercentage"));
             Double ySameQuantityPercentage = Double.valueOf((String) cache.get("ySameQuantityPercentage"));
             Double tSameQuantityPercentage = Double.valueOf((String) cache.get("tSameQuantityPercentage"));
             if (features.get(13).equals(xSameQuantityPercentage)) {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码xSameQuantityPercentage一致[type:{}, xSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, xSameQuantityPercentage);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
             if (features.get(14).equals(ySameQuantityPercentage)) {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码ySameQuantityPercentage一致[type:{}, ySameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, ySameQuantityPercentage);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
             if (features.get(15).equals(tSameQuantityPercentage)) {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]tSameQuantityPercentage[type:{}, tSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, tSameQuantityPercentage);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
             // 校验时间
             String preCheckTime = (String) cache.get("preCheckTime");
             if (Long.parseLong(preCheckTime) + checkTimeInterval > currentTimeMillis) {
                 // 500毫秒内重复验证成功, 绝对不可能
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证成功不足{}ms，触发风控，进行拦截", timeWindow, ipAddr, checkTimeInterval);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
             // 校验同一时间内验证次数异常
             String checkSuccessNumStr = (String) cache.get("checkSuccessNum");
             if (StringUtils.isNotBlank(checkSuccessNumStr) && Integer.parseInt(checkSuccessNumStr) > checkSuccessNum) {
                 // 闲的没事老滑验证码干什么
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]共校验成功{}次，触发风控，进行拦截", timeWindow, ipAddr, checkSuccessNumStr);
-                return false;
+                return ApiResponse.ofMessage(DEFINITION);
             }
         }
         // 全都存成字符串，防止某些原因导致序列化错误
@@ -125,6 +127,6 @@ public class DifferenceChainValidator implements ChainCustomValidator {
         map.put("checkSuccessNum", String.valueOf(Integer.parseInt(checkSuccessNum) + 1));
         // 存储
         cacheStore.setCache(key, map, timeWindow, TimeUnit.MILLISECONDS);
-        return true;
+        return ApiResponse.ofSuccess();
     }
 }

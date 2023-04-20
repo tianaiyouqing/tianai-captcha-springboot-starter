@@ -14,7 +14,7 @@ import lombok.Setter;
 public class CaptchaValidException extends ImageCaptchaException {
 
     private String captchaType;
-
+    private Integer code;
     public CaptchaValidException() {
     }
 
@@ -22,7 +22,11 @@ public class CaptchaValidException extends ImageCaptchaException {
         super(message);
         this.captchaType = captchaType;
     }
-
+    public CaptchaValidException(String captchaType,Integer code, String message) {
+        super(message);
+        this.code = code;
+        this.captchaType = captchaType;
+    }
     public CaptchaValidException(String message, Throwable cause) {
         super(message, cause);
     }

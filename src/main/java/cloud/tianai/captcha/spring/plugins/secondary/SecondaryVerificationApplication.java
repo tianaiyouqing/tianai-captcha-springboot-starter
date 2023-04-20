@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.spring.plugins.secondary;
 
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.autoconfiguration.SecondaryVerificationProperties;
 import cloud.tianai.captcha.spring.application.FilterImageCaptchaApplication;
 import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
@@ -23,9 +24,9 @@ public class SecondaryVerificationApplication extends FilterImageCaptchaApplicat
     }
 
     @Override
-    public boolean matching(String id, ImageCaptchaTrack imageCaptchaTrack) {
-        boolean match = super.matching(id, imageCaptchaTrack);
-        if (match) {
+    public ApiResponse<?> matching(String id, ImageCaptchaTrack imageCaptchaTrack) {
+        ApiResponse<?>  match = super.matching(id, imageCaptchaTrack);
+        if (match.isSuccess()) {
             // 如果匹配成功， 添加二次验证记录
             addSecondaryVerification(id, imageCaptchaTrack);
         }

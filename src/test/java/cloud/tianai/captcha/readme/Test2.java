@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.application.CaptchaImageType;
 import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.spring.vo.CaptchaResponse;
@@ -28,7 +29,7 @@ public class Test2 {
         // 匹配验证码是否正确
         // 该参数包含了滑动轨迹滑动时间等数据，用于校验滑块验证码。 由前端传入
         ImageCaptchaTrack sliderCaptchaTrack = new ImageCaptchaTrack();
-        boolean match = application.matching(res1.getId(), sliderCaptchaTrack);
+        ApiResponse<?> match = application.matching(res1.getId(), sliderCaptchaTrack);
     }
 
 }

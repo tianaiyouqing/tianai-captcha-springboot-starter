@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.spring.application;
 
 
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
@@ -65,7 +66,7 @@ public interface ImageCaptchaApplication {
      * @param imageCaptchaTrack 滑动轨迹
      * @return 匹配成功返回true， 否则返回false
      */
-    boolean matching(String id, ImageCaptchaTrack imageCaptchaTrack);
+    ApiResponse<?> matching(String id, ImageCaptchaTrack imageCaptchaTrack);
 
     /**
      * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, ImageCaptchaTrack)}

@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.spring.application;
 
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
@@ -49,7 +50,7 @@ public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public boolean matching(String id, ImageCaptchaTrack ImageCaptchaTrack) {
+    public ApiResponse<?> matching(String id, ImageCaptchaTrack ImageCaptchaTrack) {
         return target.matching(id, ImageCaptchaTrack);
     }
 

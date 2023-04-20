@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.spring.aop;
 
 
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.annotation.Captcha;
 import cloud.tianai.captcha.spring.exception.CaptchaValidException;
 import cloud.tianai.captcha.spring.request.CaptchaRequest;
@@ -51,12 +52,12 @@ public class CaptchaInterceptor implements MethodInterceptor, BeanFactoryAware {
             throw new CaptchaValidException(type, "ImageCaptchaTrack 不能为空");
         }
 
-        boolean matching = getSliderCaptchaApplication().matching(id, captchaTrack);
-        if (matching) {
+        ApiResponse<?> matching = getSliderCaptchaApplication().matching(id, captchaTrack);
+        if (matching.isSuccess()) {
             return invocation.proceed();
         }
 
-        throw new CaptchaValidException(type, "验证失败");
+        throw new CaptchaValidException(type, matching.getCode(), matching.getMsg());
     }
 
     public ImageCaptchaApplication getSliderCaptchaApplication() {
