@@ -1,20 +1,20 @@
 package cloud.tianai.captcha.spring.application;
 
-import cloud.tianai.captcha.common.response.ApiResponse;
-import cloud.tianai.captcha.common.response.ApiResponseStatusConstant;
-import cloud.tianai.captcha.spring.autoconfiguration.ImageCaptchaProperties;
-import cloud.tianai.captcha.spring.exception.CaptchaValidException;
-import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
+import cloud.tianai.captcha.common.response.ApiResponse;
+import cloud.tianai.captcha.common.response.ApiResponseStatusConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.validator.ImageCaptchaValidator;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.spring.autoconfiguration.ImageCaptchaProperties;
+import cloud.tianai.captcha.spring.exception.CaptchaValidException;
+import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.spring.vo.CaptchaResponse;
 import cloud.tianai.captcha.spring.vo.ImageCaptchaVO;
+import cloud.tianai.captcha.validator.ImageCaptchaValidator;
+import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -116,7 +116,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         verificationVO.setBackgroundImageHeight(slideImageInfo.getBackgroundImageHeight());
         verificationVO.setTemplateImageWidth(slideImageInfo.getTemplateImageWidth());
         verificationVO.setTemplateImageHeight(slideImageInfo.getTemplateImageHeight());
-        verificationVO.setData(slideImageInfo.getData());
+        verificationVO.setData(slideImageInfo.getData() == null ? null : slideImageInfo.getData().getViewData());
         return CaptchaResponse.of(id, verificationVO);
     }
 
@@ -126,7 +126,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         if (cachePercentage == null) {
             return ApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
         }
-         return getImageCaptchaValidator().valid(imageCaptchaTrack, cachePercentage);
+        return getImageCaptchaValidator().valid(imageCaptchaTrack, cachePercentage);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         if (!(imageCaptchaValidator instanceof SimpleImageCaptchaValidator)) {
             return false;
         }
-        SimpleImageCaptchaValidator simpleImageCaptchaValidator = (SimpleImageCaptchaValidator)imageCaptchaValidator;
+        SimpleImageCaptchaValidator simpleImageCaptchaValidator = (SimpleImageCaptchaValidator) imageCaptchaValidator;
         Float oriPercentage = simpleImageCaptchaValidator.getFloatParam(SimpleImageCaptchaValidator.PERCENTAGE_KEY, cachePercentage);
         // 读容错值
         Float tolerant = simpleImageCaptchaValidator.getFloatParam(SimpleImageCaptchaValidator.TOLERANT_KEY, cachePercentage, simpleImageCaptchaValidator.getDefaultTolerant());
