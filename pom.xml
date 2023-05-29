@@ -6,7 +6,7 @@
 
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha-springboot-starter</artifactId>
-    <version>1.4.0.1</version>
+    <version>1.4.0.1.mate</version>
 
     <name>tianai-captcha-springboot-starter</name>
     <description>滑块验证码springboot启动器</description>

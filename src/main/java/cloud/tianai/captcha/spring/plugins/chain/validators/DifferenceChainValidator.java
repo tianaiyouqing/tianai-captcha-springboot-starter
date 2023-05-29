@@ -2,6 +2,7 @@ package cloud.tianai.captcha.spring.plugins.chain.validators;
 
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.common.response.CodeDefinition;
+import cloud.tianai.captcha.common.util.CaptchaUtils;
 import cloud.tianai.captcha.spring.common.util.IPUtils;
 import cloud.tianai.captcha.spring.store.CacheStore;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
@@ -86,20 +87,23 @@ public class DifferenceChainValidator implements ChainCustomValidator {
                 log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码std一致[type:{}, std:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, std);
                 return ApiResponse.ofMessage(DEFINITION);
             }
-            Double xSameQuantityPercentage = Double.valueOf((String) cache.get("xSameQuantityPercentage"));
-            Double ySameQuantityPercentage = Double.valueOf((String) cache.get("ySameQuantityPercentage"));
-            Double tSameQuantityPercentage = Double.valueOf((String) cache.get("tSameQuantityPercentage"));
-            if (features.get(13).equals(xSameQuantityPercentage)) {
-                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码xSameQuantityPercentage一致[type:{}, xSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, xSameQuantityPercentage);
-                return ApiResponse.ofMessage(DEFINITION);
-            }
-            if (features.get(14).equals(ySameQuantityPercentage)) {
-                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码ySameQuantityPercentage一致[type:{}, ySameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, ySameQuantityPercentage);
-                return ApiResponse.ofMessage(DEFINITION);
-            }
-            if (features.get(15).equals(tSameQuantityPercentage)) {
-                log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]tSameQuantityPercentage[type:{}, tSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, tSameQuantityPercentage);
-                return ApiResponse.ofMessage(DEFINITION);
+            if (CaptchaUtils.isSliderCaptcha(type)) {
+                // 该差异校验只有在滑动类验证码才有效, 点选跳过
+                Double xSameQuantityPercentage = Double.valueOf((String) cache.get("xSameQuantityPercentage"));
+                Double ySameQuantityPercentage = Double.valueOf((String) cache.get("ySameQuantityPercentage"));
+                Double tSameQuantityPercentage = Double.valueOf((String) cache.get("tSameQuantityPercentage"));
+                if (features.get(13).equals(xSameQuantityPercentage)) {
+                    log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码xSameQuantityPercentage一致[type:{}, xSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, xSameQuantityPercentage);
+                    return ApiResponse.ofMessage(DEFINITION);
+                }
+                if (features.get(14).equals(ySameQuantityPercentage)) {
+                    log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]距离上次验证码ySameQuantityPercentage一致[type:{}, ySameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, ySameQuantityPercentage);
+                    return ApiResponse.ofMessage(DEFINITION);
+                }
+                if (features.get(15).equals(tSameQuantityPercentage)) {
+                    log.warn("[验证码差异拦截器]在{}ms时间内，该IP:[{}]tSameQuantityPercentage[type:{}, tSameQuantityPercentage:{}]，触发风控，进行拦截", timeWindow, ipAddr, type, tSameQuantityPercentage);
+                    return ApiResponse.ofMessage(DEFINITION);
+                }
             }
             // 校验时间
             String preCheckTime = (String) cache.get("preCheckTime");
