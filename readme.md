@@ -46,7 +46,7 @@ public class Test {
 
 ```
 
-- 编码式风格
+- 编码式风格(推荐使用编码式风格)
 
 ```java
 package cloud.tianai.captcha.readme;
@@ -79,7 +79,7 @@ public class Test2 {
         // 匹配验证码是否正确
         // 该参数包含了滑动轨迹滑动时间等数据，用于校验滑块验证码。 由前端传入
         ImageCaptchaTrack sliderCaptchaTrack = new ImageCaptchaTrack();
-        boolean match = application.matching(res1.getId(), sliderCaptchaTrack);
+        ApiResponse<?> match = application.matching(res1.getId(), sliderCaptchaTrack);
     }
 
 }
@@ -98,7 +98,7 @@ captcha:
   # 如果项目中使用到了redis，滑块验证码会自动把验证码数据存到redis中， 这里配置redis的key的前缀,默认是captcha:slider
   prefix: captcha
   # 验证码过期时间，默认是2分钟,单位毫秒， 可以根据自身业务进行调整
-  expire: 
+  expire:
     # 默认缓存时间 2分钟
     default: 10000
     # 针对 点选验证码 过期时间设置为 2分钟， 因为点选验证码验证比较慢，把过期时间调整大一些
@@ -114,13 +114,13 @@ captcha:
     wait-time: 5000
     # 缓存检查间隔 默认是2秒钟
     period: 2000
-    secondary:
-      # 二次验证， 默认false 不开启
-      enabled: false
-      # 二次验证过期时间， 默认 2分钟
-      expire: 120000
-      # 二次验证缓存key前缀，默认是 captcha:secondary
-      keyPrefix: "captcha:secondary"
+  secondary:
+    # 二次验证， 默认false 不开启
+    enabled: false
+    # 二次验证过期时间， 默认 2分钟
+    expire: 120000
+    # 二次验证缓存key前缀，默认是 captcha:secondary
+    keyPrefix: "captcha:secondary"
 ```
 ## 自定义扩展
 > 依赖于 tianai-captcha 的高扩展性，
