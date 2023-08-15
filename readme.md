@@ -1,7 +1,7 @@
 # 这是 滑块验证码(tianai-captcha)的springboot启动类
 
 ## [在线体验](https://www.tianai.cloud)
-
+## 在线文档 [在线文档](http://doc.captcha.tianai.cloud)
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
 ## 快速上手
