@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.spring.autoconfiguration;
 
-import cloud.tianai.captcha.spring.store.CacheStore;
-import cloud.tianai.captcha.spring.store.impl.LocalCacheStore;
+import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.cache.impl.LocalCacheStore;
 import cloud.tianai.captcha.spring.store.impl.RedisCacheStore;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

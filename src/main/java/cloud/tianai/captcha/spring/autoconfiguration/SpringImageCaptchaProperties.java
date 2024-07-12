@@ -1,6 +1,8 @@
 package cloud.tianai.captcha.spring.autoconfiguration;
 
+import cloud.tianai.captcha.application.ImageCaptchaProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -13,8 +15,9 @@ import java.util.Map;
  * @Description 滑块验证码属性
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties(prefix = "captcha")
-public class ImageCaptchaProperties {
+public class SpringImageCaptchaProperties extends ImageCaptchaProperties {
     /** 过期key prefix. */
     private String prefix = "captcha";
     /** 过期时间. */

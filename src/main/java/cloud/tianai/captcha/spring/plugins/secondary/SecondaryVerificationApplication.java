@@ -1,9 +1,10 @@
 package cloud.tianai.captcha.spring.plugins.secondary;
 
+import cloud.tianai.captcha.application.FilterImageCaptchaApplication;
+import cloud.tianai.captcha.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.autoconfiguration.SecondaryVerificationProperties;
-import cloud.tianai.captcha.spring.application.FilterImageCaptchaApplication;
-import cloud.tianai.captcha.spring.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class SecondaryVerificationApplication extends FilterImageCaptchaApplicat
      * @param imageCaptchaTrack sliderCaptchaTrack
      */
     protected void addSecondaryVerification(String id, ImageCaptchaTrack imageCaptchaTrack) {
-        target.getCacheStore().setCache(getKey(id), Collections.emptyMap(), prop.getExpire(), TimeUnit.MILLISECONDS);
+        target.getCacheStore().setCache(getKey(id), new AnyMap(), prop.getExpire(), TimeUnit.MILLISECONDS);
     }
 
     protected String getKey(String id) {

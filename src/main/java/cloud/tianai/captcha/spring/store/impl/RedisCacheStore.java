@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.spring.store.impl;
 
-import cloud.tianai.captcha.spring.store.CacheStore;
+import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.common.AnyMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,28 +29,44 @@ public class RedisCacheStore implements CacheStore {
     }
 
     @Override
-    public Map<String, Object> getCache(String key) {
+    public AnyMap getCache(String key) {
         String jsonData = redisTemplate.opsForValue().get(key);
         if (StringUtils.isEmpty(jsonData)) {
             return null;
         }
-        return gson.fromJson(jsonData, new TypeToken<Map<String, Object>>() {
+        return gson.fromJson(jsonData, new TypeToken<AnyMap>() {
         }.getType());
     }
 
     @Override
-    public Map<String, Object> getAndRemoveCache(String key) {
+    public AnyMap getAndRemoveCache(String key) {
         String json = redisTemplate.execute(SCRIPT_GET_CACHE, Collections.singletonList(key));
         if (org.apache.commons.lang3.StringUtils.isBlank(json)) {
             return null;
         }
-        return gson.fromJson(json, new TypeToken<Map<String, Object>>() {
+        return gson.fromJson(json, new TypeToken<AnyMap>() {
         }.getType());
     }
 
     @Override
-    public boolean setCache(String key, Map<String, Object> data, Long expire, TimeUnit timeUnit) {
+    public boolean setCache(String key, AnyMap data, Long expire, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, gson.toJson(data), expire, timeUnit);
         return true;
+    }
+
+    @Override
+    public Long incr(String key, long delta, Long expire, TimeUnit timeUnit) {
+        Long increment = redisTemplate.opsForValue().increment(key, delta);
+        redisTemplate.expire(key, expire, timeUnit);
+        return increment;
+    }
+
+    @Override
+    public Long getLong(String key) {
+        String value = redisTemplate.opsForValue().get(key);
+        if (value == null) {
+            return null;
+        }
+        return Long.valueOf(value);
     }
 }
