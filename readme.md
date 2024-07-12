@@ -167,4 +167,4 @@ public class Test3 {
 - 关于[tianai-captcha](https://gitee.com/tianai/tianai-captcha)
 
 ## qq群: 1021884609
-## 微信群: ![](https://minio.tianai.cloud/public/qun2.jpg)
+## 微信群: ![](https://minio.tianai.cloud/public/qun2.jpg?t=12313)
