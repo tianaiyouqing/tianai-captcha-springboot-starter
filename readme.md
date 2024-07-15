@@ -64,15 +64,17 @@ captcha:
     WORD_IMAGE_CLICK: 20000
   # 使用加载系统自带的资源， 默认是 false
   init-default-resource: false
-  cache:
-    # 缓存控制， 默认为false不开启
-    enabled: true
-    # 验证码会提前缓存一些生成好的验证数据， 默认是20
-    cacheSize: 20
-    # 缓存拉取失败后等待时间 默认是 5秒钟
-    wait-time: 5000
-    # 缓存检查间隔 默认是2秒钟
-    period: 2000
+  # 缓存控制， 默认为false不开启
+  local-cache-enabled: true
+  # 验证码会提前缓存一些生成好的验证数据， 默认是20
+  local-cache-size: 20
+  # 缓存拉取失败后等待时间 默认是 5秒钟
+  local-cache-wait-time: 5000
+  # 缓存检查间隔 默认是2秒钟
+  local-cache-period: 2000
+  # 配置字体库，文字点选验证码的字体库，可以配置多个
+  font-path:
+    - classpath:font/simhei.ttf
   secondary:
     # 二次验证， 默认false 不开启
     enabled: false

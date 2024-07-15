@@ -3,9 +3,12 @@ package cloud.tianai.captcha.spring.autoconfiguration;
 
 import cloud.tianai.captcha.application.DefaultImageCaptchaApplication;
 import cloud.tianai.captcha.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.application.TACBuilder;
 import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.FontWrapper;
 import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
@@ -22,21 +25,28 @@ import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplic
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
+
+import java.awt.*;
+import java.io.InputStream;
 
 /**
  * @Author: 天爱有情
  * @Date 2020/5/29 9:49
  * @Description 滑块验证码自动装配
  */
+@Slf4j
 @Order
 @Configuration
 @AutoConfigureAfter(CacheStoreAutoConfiguration.class)
@@ -68,16 +78,7 @@ public class ImageCaptchaAutoConfiguration {
                                                       ImageCaptchaResourceManager captchaResourceManager,
                                                       ImageTransform imageTransform,
                                                       BeanFactory beanFactory) {
-        // 构建多验证码生成器
-        ImageCaptchaGenerator captchaGenerator = new SpringMultiImageCaptchaGenerator(captchaResourceManager, imageTransform, beanFactory);
-        SliderCaptchaCacheProperties cache = prop.getCache();
-        if (cache != null && Boolean.TRUE.equals(cache.getEnabled()) && cache.getCacheSize() > 0) {
-            // 增加缓存处理
-            captchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator, cache.getCacheSize(), cache.getWaitTime(), cache.getPeriod());
-        }
-        // 初始化
-        captchaGenerator.init(prop.getInitDefaultResource());
-        return captchaGenerator;
+        return new SpringMultiImageCaptchaGenerator(captchaResourceManager, imageTransform, beanFactory);
     }
 
     @Bean
@@ -98,21 +99,43 @@ public class ImageCaptchaAutoConfiguration {
 
 
     @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @ConditionalOnMissingBean
-    public CacheCaptchaTemplateListener captchaTemplateListener() {
-        return new CacheCaptchaTemplateListener();
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public ImageCaptchaApplication imageCaptchaApplication(ImageCaptchaGenerator captchaGenerator,
                                                            ImageCaptchaValidator imageCaptchaValidator,
                                                            CacheStore cacheStore,
+                                                           ResourceStore resourceStore,
                                                            SpringImageCaptchaProperties prop,
-                                                           CaptchaInterceptor captchaInterceptor) {
-        ImageCaptchaApplication target = new DefaultImageCaptchaApplication(captchaGenerator, imageCaptchaValidator, cacheStore, prop,captchaInterceptor);
+                                                           CaptchaInterceptor captchaInterceptor,
+                                                           ApplicationContext applicationContext) {
+        TACBuilder tacBuilder = TACBuilder.builder()
+                .setGenerator(captchaGenerator)
+                .setValidator(imageCaptchaValidator)
+                .setResourceStore(resourceStore)
+                .setCacheStore(cacheStore)
+                .setProp(prop)
+                .setInterceptor(captchaInterceptor);
+
+        if (prop.getInitDefaultResource()) {
+            log.warn("TAC 企业版中的jar包中默认没有资源文件，调用初始化默认资源，请手动设置资源位置");
+            tacBuilder.addDefaultTemplate(prop.getDefaultResourcePrefix());
+        }
+        if (!CollectionUtils.isEmpty(prop.getFontPath())) {
+            // 读取字体包
+            for (String fontPath : prop.getFontPath()) {
+                Resource resource = applicationContext.getResource(fontPath);
+                try {
+                    InputStream inputStream = resource.getInputStream();
+                    Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+                    tacBuilder.addFont(new FontWrapper(font));
+                    inputStream.close();
+                } catch (Exception e) {
+                    throw new RuntimeException("读取字体包失败，path=" + fontPath, e);
+                }
+            }
+        }
+        ImageCaptchaApplication target = tacBuilder.build();
         if (prop.getSecondary() != null && Boolean.TRUE.equals(prop.getSecondary().getEnabled())) {
+            // 一个简单的二次验证
             target = new SecondaryVerificationApplication(target, prop.getSecondary());
         }
         return target;

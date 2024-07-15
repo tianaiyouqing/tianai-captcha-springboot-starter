@@ -23,8 +23,8 @@ public class SpringMultiImageCaptchaGenerator extends MultiImageCaptchaGenerator
     }
 
     @Override
-    protected void doInit(boolean initDefaultResource) {
-        super.doInit(initDefaultResource);
+    protected void doInit() {
+        super.doInit();
         String[] beanNamesForType = beanFactory.getBeanNamesForType(ImageCaptchaGeneratorProvider.class);
         if (!ArrayUtils.isEmpty(beanNamesForType)) {
             for (String beanName : beanNamesForType) {

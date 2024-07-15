@@ -1,12 +1,14 @@
 package cloud.tianai.captcha.spring.autoconfiguration;
 
 import cloud.tianai.captcha.application.ImageCaptchaProperties;
+import cloud.tianai.captcha.resource.DefaultBuiltInResources;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,17 +20,13 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties(prefix = "captcha")
 public class SpringImageCaptchaProperties extends ImageCaptchaProperties {
-    /** 过期key prefix. */
-    private String prefix = "captcha";
-    /** 过期时间. */
-    private Map<String, Long> expire = Collections.emptyMap();
     /** 是否初始化默认资源. */
     private Boolean initDefaultResource = false;
+    /** 默认资源的位置. */
+    private String defaultResourcePrefix = DefaultBuiltInResources.PATH_PREFIX;
+    /** 字体包路径. */
+    private List<String> fontPath;
     /** 二次验证配置. */
     @NestedConfigurationProperty
     private SecondaryVerificationProperties secondary;
-    /** 缓存配置. */
-    @NestedConfigurationProperty
-    private SliderCaptchaCacheProperties cache;
-
 }
