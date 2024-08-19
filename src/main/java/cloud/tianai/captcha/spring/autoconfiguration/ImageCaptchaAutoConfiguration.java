@@ -116,7 +116,6 @@ public class ImageCaptchaAutoConfiguration {
                 .setInterceptor(captchaInterceptor);
 
         if (prop.getInitDefaultResource()) {
-            log.warn("TAC 企业版中的jar包中默认没有资源文件，调用初始化默认资源，请手动设置资源位置");
             tacBuilder.addDefaultTemplate(prop.getDefaultResourcePrefix());
         }
         if (!CollectionUtils.isEmpty(prop.getFontPath())) {
