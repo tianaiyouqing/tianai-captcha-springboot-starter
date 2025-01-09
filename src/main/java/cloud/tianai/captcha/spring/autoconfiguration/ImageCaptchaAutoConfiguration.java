@@ -17,6 +17,7 @@ import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.impl.BasicTrackCaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.impl.ParamCheckCaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.ResourceProviders;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.LocalMemoryResourceStore;
@@ -62,7 +63,8 @@ public class ImageCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ImageCaptchaResourceManager imageCaptchaResourceManager(ResourceStore resourceStore) {
-        return new DefaultImageCaptchaResourceManager(resourceStore);
+        ResourceProviders resourceProviders = new ResourceProviders();
+        return new DefaultImageCaptchaResourceManager(resourceStore,resourceProviders);
     }
 
     @Bean
@@ -107,10 +109,9 @@ public class ImageCaptchaAutoConfiguration {
                                                            SpringImageCaptchaProperties prop,
                                                            CaptchaInterceptor captchaInterceptor,
                                                            ApplicationContext applicationContext) {
-        TACBuilder tacBuilder = TACBuilder.builder()
+        TACBuilder tacBuilder = TACBuilder.builder(resourceStore)
                 .setGenerator(captchaGenerator)
                 .setValidator(imageCaptchaValidator)
-                .setResourceStore(resourceStore)
                 .setCacheStore(cacheStore)
                 .setProp(prop)
                 .setInterceptor(captchaInterceptor);
@@ -121,15 +122,11 @@ public class ImageCaptchaAutoConfiguration {
         if (!CollectionUtils.isEmpty(prop.getFontPath())) {
             // 读取字体包
             for (String fontPath : prop.getFontPath()) {
-                Resource resource = applicationContext.getResource(fontPath);
-                try {
-                    InputStream inputStream = resource.getInputStream();
-                    Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-                    tacBuilder.addFont(new FontWrapper(font));
-                    inputStream.close();
-                } catch (Exception e) {
-                    throw new RuntimeException("读取字体包失败，path=" + fontPath, e);
-                }
+                int index = fontPath.indexOf(":");
+                String[] split = index > 0 ? new String[]{fontPath.substring(0, index), fontPath.substring(index + 1)} : new String[]{"", fontPath};
+                String type = split[0];
+                String path = split[1];
+                tacBuilder.addFont(new cloud.tianai.captcha.resource.common.model.dto.Resource(type, path));
             }
         }
         ImageCaptchaApplication target = tacBuilder.build();
